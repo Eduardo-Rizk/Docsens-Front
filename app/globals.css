@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-syne);
+
+  --color-background: oklch(0.12 0.02 260);
+  --color-foreground: oklch(0.98 0 0);
+
+  --color-brand-primary: oklch(0.65 0.22 260);
+  --color-brand-primary-foreground: oklch(0.98 0 0);
+
+  --color-brand-secondary: oklch(0.88 0.22 100);
+  --color-brand-secondary-foreground: oklch(0.12 0.02 260);
+
+  --color-brand-accent: oklch(0.7 0.25 320);
+
+  --color-surface: oklch(0.18 0.03 260);
+  --color-surface-hover: oklch(0.22 0.03 260);
+  --color-border: oklch(0.25 0.03 260);
+}
+
+/* Base Styles */
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(
+      circle at 15% 0%,
+      oklch(0.65 0.22 260 / 0.15),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      oklch(0.7 0.25 320 / 0.1),
+      transparent 40%
+    );
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+/* Utilities */
+@utility glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@utility glass-hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+@utility text-glow {
+  text-shadow: 0 0 20px currentColor;
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@utility animate-float {
+  animation: float 6s ease-in-out infinite;
+}

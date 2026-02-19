@@ -1,216 +1,161 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StatusPill } from "@/components/status-pill";
+import { ChevronRight, Users } from "lucide-react";
 import {
   getInstitutionById,
-  getPublishedClassEventsByInstitution,
-  getSubjectById,
-  getTeacherById,
-  isClassSoldOut,
+  getYearLevels,
+  getTeachersBySubjectAndInstitution,
 } from "@/lib/domain";
-import { formatLongDate, formatShortDate, formatTime, isToday } from "@/lib/format";
 
 type PageProps = {
   params: Promise<{ institutionId: string }>;
-  searchParams: Promise<{ subject?: string; availability?: string }>;
 };
 
-export default async function InstitutionPage({
-  params,
-  searchParams,
-}: PageProps) {
+const SUBJECT_COLORS: Record<string, string> = {
+  "sub-matematica": "from-cyan-500/20 to-cyan-500/5 border-cyan-500/30 hover:border-cyan-400/60",
+  "sub-calculo":    "from-cyan-500/20 to-cyan-500/5 border-cyan-500/30 hover:border-cyan-400/60",
+  "sub-fisica":     "from-blue-500/20 to-blue-500/5 border-blue-500/30 hover:border-blue-400/60",
+  "sub-quimica":    "from-purple-500/20 to-purple-500/5 border-purple-500/30 hover:border-purple-400/60",
+  "sub-biologia":   "from-emerald-500/20 to-emerald-500/5 border-emerald-500/30 hover:border-emerald-400/60",
+  "sub-historia":   "from-amber-500/20 to-amber-500/5 border-amber-500/30 hover:border-amber-400/60",
+  "sub-geografia":  "from-orange-500/20 to-orange-500/5 border-orange-500/30 hover:border-orange-400/60",
+  "sub-portugues":  "from-rose-500/20 to-rose-500/5 border-rose-500/30 hover:border-rose-400/60",
+  "sub-literatura": "from-pink-500/20 to-pink-500/5 border-pink-500/30 hover:border-pink-400/60",
+  "sub-redacao":    "from-rose-500/20 to-rose-500/5 border-rose-500/30 hover:border-rose-400/60",
+  "sub-direito":    "from-indigo-500/20 to-indigo-500/5 border-indigo-500/30 hover:border-indigo-400/60",
+  "sub-estatistica":"from-cyan-500/20 to-cyan-500/5 border-cyan-500/30 hover:border-cyan-400/60",
+  "sub-ingles":     "from-sky-500/20 to-sky-500/5 border-sky-500/30 hover:border-sky-400/60",
+};
+
+const SUBJECT_ICON_COLORS: Record<string, string> = {
+  "sub-matematica": "text-cyan-400",
+  "sub-calculo":    "text-cyan-400",
+  "sub-fisica":     "text-blue-400",
+  "sub-quimica":    "text-purple-400",
+  "sub-biologia":   "text-emerald-400",
+  "sub-historia":   "text-amber-400",
+  "sub-geografia":  "text-orange-400",
+  "sub-portugues":  "text-rose-400",
+  "sub-literatura": "text-pink-400",
+  "sub-redacao":    "text-rose-400",
+  "sub-direito":    "text-indigo-400",
+  "sub-estatistica":"text-cyan-400",
+  "sub-ingles":     "text-sky-400",
+};
+
+export default async function InstitutionPage({ params }: PageProps) {
   const { institutionId } = await params;
-  const filters = await searchParams;
   const institution = getInstitutionById(institutionId);
 
   if (!institution) {
     notFound();
   }
 
-  const allEvents = getPublishedClassEventsByInstitution(institutionId);
-  const availableSubjects = Array.from(
-    new Set(allEvents.map((event) => event.subjectId)),
-  )
-    .map((subjectId) => getSubjectById(subjectId))
-    .filter((subject): subject is NonNullable<typeof subject> => Boolean(subject));
-
-  const filteredEvents = allEvents.filter((event) => {
-    const subjectMatch = filters.subject
-      ? event.subjectId === filters.subject
-      : true;
-
-    const availabilityMatch =
-      filters.availability === "open"
-        ? !isClassSoldOut(event)
-        : filters.availability === "soldout"
-          ? isClassSoldOut(event)
-          : true;
-
-    return subjectMatch && availabilityMatch;
-  });
-
-  const makeFilterHref = (next: { subject?: string; availability?: string }) => {
-    const query = new URLSearchParams();
-    if (next.subject) {
-      query.set("subject", next.subject);
-    }
-    if (next.availability) {
-      query.set("availability", next.availability);
-    }
-
-    const suffix = query.size ? `?${query.toString()}` : "";
-    return `/instituicoes/${institutionId}${suffix}`;
-  };
+  const yearLevels = getYearLevels(institutionId);
 
   return (
-    <div className="space-y-10">
-      <header className="space-y-4">
+    <div className="space-y-14">
+      {/* Header */}
+      <header className="space-y-6">
         <Link
-          href="/"
-          className="inline-flex text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-blue)] transition-transform duration-200 hover:translate-x-1"
+          href="/explorar"
+          className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent transition-opacity duration-200 hover:opacity-70"
         >
-          Voltar para instituicoes
+          ← Voltar para instituições
         </Link>
-        <h1 className="font-display text-4xl leading-tight text-[var(--text-strong)] sm:text-5xl">
-          {institution.name}
-        </h1>
-        <p className="max-w-2xl text-lg leading-relaxed">
-          Auloes publicados para esta instituicao. Cada item funciona como
-          convite para um encontro academico ao vivo.
-        </p>
-      </header>
 
-      <details className="panel group p-5 sm:p-6" open>
-        <summary className="cursor-pointer list-none text-sm font-semibold uppercase tracking-[0.12em] text-[var(--brand-blue)]">
-          Refinar selecao
-        </summary>
-        <div className="mt-5 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={makeFilterHref({ availability: filters.availability })}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition-transform duration-200 hover:-translate-y-0.5 ${
-                !filters.subject
-                  ? "bg-[var(--brand-blue)] text-white"
-                  : "bg-[#eef3fa] text-[#5f6c7b]"
-              }`}
-            >
-              Todos os temas
-            </Link>
-            {availableSubjects.map((subject) => (
-              <Link
-                key={subject.id}
-                href={makeFilterHref({
-                  subject: subject.id,
-                  availability: filters.availability,
-                })}
-                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition-transform duration-200 hover:-translate-y-0.5 ${
-                  filters.subject === subject.id
-                    ? "bg-[var(--brand-blue)] text-white"
-                    : "bg-[#eef3fa] text-[#5f6c7b]"
-                }`}
-              >
-                {subject.name}
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={makeFilterHref({ subject: filters.subject })}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition-transform duration-200 hover:-translate-y-0.5 ${
-                !filters.availability
-                  ? "bg-[var(--brand-accent)] text-[#5d4300]"
-                  : "bg-[#fff7e0] text-[#8f6b08]"
-              }`}
-            >
-              Todos os estados
-            </Link>
-            <Link
-              href={makeFilterHref({
-                subject: filters.subject,
-                availability: "open",
-              })}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition-transform duration-200 hover:-translate-y-0.5 ${
-                filters.availability === "open"
-                  ? "bg-[var(--brand-accent)] text-[#5d4300]"
-                  : "bg-[#fff7e0] text-[#8f6b08]"
-              }`}
-            >
-              Com vagas
-            </Link>
-            <Link
-              href={makeFilterHref({
-                subject: filters.subject,
-                availability: "soldout",
-              })}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition-transform duration-200 hover:-translate-y-0.5 ${
-                filters.availability === "soldout"
-                  ? "bg-[var(--brand-accent)] text-[#5d4300]"
-                  : "bg-[#fff7e0] text-[#8f6b08]"
-              }`}
-            >
-              Esgotados
-            </Link>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <span className="inline-block rounded-sm border border-border bg-surface px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                {institution.type === "SCHOOL" ? "Ensino Médio" : "Graduação"}
+              </span>
+              <span className="text-xs text-muted-foreground">{institution.city}</span>
+            </div>
+            <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+              {institution.name}
+            </h1>
+            <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
+              Escolha a matéria para ver os professores disponíveis e agendar sua próxima aula.
+            </p>
           </div>
         </div>
-      </details>
 
-      <section className="space-y-3">
-        {filteredEvents.length === 0 ? (
-          <div className="panel p-8 text-center">
-            <p className="font-display text-3xl text-[var(--text-strong)]">
-              Nenhum encontro encontrado
-            </p>
-            <p className="mt-2 text-sm text-[#6b7280]">
-              Ajuste os filtros para revelar novas combinacoes de tema e
-              disponibilidade.
-            </p>
-          </div>
-        ) : (
-          filteredEvents.map((event) => {
-            const teacher = getTeacherById(event.teacherProfileId);
-            const subject = getSubjectById(event.subjectId);
-            const soldOut = isClassSoldOut(event);
+        {/* Accent divider */}
+        <div className="h-px w-full bg-gradient-to-r from-brand-accent/40 via-brand-accent/10 to-transparent" />
+      </header>
 
-            return (
-              <Link
-                key={event.id}
-                href={`/auloes/${event.id}`}
-                className="event-link group"
-              >
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#7f8994]">
-                    {isToday(event.startsAt) ? "Hoje" : formatShortDate(event.startsAt)}
-                  </p>
-                  <p className="font-display text-3xl leading-tight text-[var(--text-strong)]">
-                    {formatTime(event.startsAt)}
-                  </p>
-                </div>
+      {/* Year sections */}
+      {yearLevels.length === 0 ? (
+        <div className="rounded-sm border border-border bg-surface p-12 text-center">
+          <p className="font-display text-2xl text-foreground">Nenhuma matéria cadastrada</p>
+          <p className="mt-2 text-sm text-muted-foreground">Esta instituição ainda não possui matérias disponíveis.</p>
+        </div>
+      ) : (
+        yearLevels.map((yearLevel) => (
+          <section key={yearLevel.yearLabel} className="space-y-6">
+            {/* Year label */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-1 bg-brand-accent" />
+                <h2 className="font-display text-2xl text-foreground">
+                  {yearLevel.yearLabel}
+                </h2>
+              </div>
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                {yearLevel.subjects.length} matérias
+              </span>
+            </div>
 
-                <div className="space-y-2">
-                  <p className="font-display text-2xl leading-tight text-[var(--text-strong)] transition-transform duration-200 group-hover:translate-x-1">
-                    {event.title}
-                  </p>
-                  <p className="text-sm text-[#64707c]">
-                    {teacher?.headline} • {subject?.name}
-                  </p>
-                  <p className="text-sm text-[#6f7984]">
-                    {formatLongDate(event.startsAt)}
-                  </p>
-                </div>
+            {/* Subject grid */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {yearLevel.subjects.map((subject) => {
+                const teachers = getTeachersBySubjectAndInstitution(institutionId, subject.id);
+                const colorClass = SUBJECT_COLORS[subject.id] ?? "from-zinc-800/60 to-zinc-800/20 border-zinc-700/40 hover:border-zinc-500/60";
+                const iconColorClass = SUBJECT_ICON_COLORS[subject.id] ?? "text-zinc-400";
+                const hasTeachers = teachers.length > 0;
 
-                <div className="justify-self-end">
-                  {soldOut ? (
-                    <StatusPill tone="warn">Esgotado</StatusPill>
-                  ) : (
-                    <StatusPill tone="default">Aberto</StatusPill>
-                  )}
-                </div>
-              </Link>
-            );
-          })
-        )}
-      </section>
+                return (
+                  <Link
+                    key={subject.id}
+                    href={`/instituicoes/${institutionId}/materias/${subject.id}`}
+                    className={`group relative flex flex-col gap-3 rounded-sm border bg-gradient-to-b p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/40 ${colorClass}`}
+                  >
+                    {/* Icon */}
+                    <span className={`text-2xl leading-none ${iconColorClass}`} aria-hidden>
+                      {subject.icon ?? "◆"}
+                    </span>
+
+                    {/* Name */}
+                    <div className="flex-1">
+                      <p className="font-display text-base font-semibold leading-tight text-foreground">
+                        {subject.name}
+                      </p>
+                    </div>
+
+                    {/* Teachers count + arrow */}
+                    <div className="flex items-center justify-between">
+                      {hasTeachers ? (
+                        <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                          <Users size={11} />
+                          {teachers.length} professor{teachers.length !== 1 ? "es" : ""}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground/60">Em breve</span>
+                      )}
+                      <ChevronRight
+                        size={14}
+                        className="text-muted-foreground/40 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-muted-foreground"
+                      />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      )}
     </div>
   );
 }

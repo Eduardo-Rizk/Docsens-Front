@@ -78,7 +78,7 @@ export function ExploreFeed() {
                     <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-accent/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     <div className="flex items-start justify-between mb-6">
-                      <div className="relative w-14 h-14 overflow-hidden bg-foreground/5 border border-border flex items-center justify-center p-2">
+                      <div className="relative w-14 h-14 overflow-hidden bg-white border border-white/10 flex items-center justify-center p-2">
                         <Image
                           src={inst.logoUrl}
                           alt={inst.name}

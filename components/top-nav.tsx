@@ -9,8 +9,6 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/explorar", label: "Explorar" },
-  { href: "/aluno/meus-auloes", label: "Meus Auloes" },
-  { href: "/professor/auloes", label: "Professor" },
 ];
 
 function isActive(pathname: string, href: string) {

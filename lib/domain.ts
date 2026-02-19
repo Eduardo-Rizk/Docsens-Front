@@ -35,6 +35,15 @@ export type Institution = {
 export type Subject = {
   id: string;
   name: string;
+  icon?: string;
+};
+
+export type InstitutionSubject = {
+  id: string;
+  institutionId: string;
+  subjectId: string;
+  yearLabel: string;
+  yearOrder: number;
 };
 
 export type TeacherSubject = {
@@ -113,6 +122,24 @@ export const users: User[] = [
     email: "rafael@docens.app",
     role: "TEACHER",
   },
+  {
+    id: "u-teacher-carlos",
+    name: "Carlos Mendes",
+    email: "carlos@docens.app",
+    role: "TEACHER",
+  },
+  {
+    id: "u-teacher-mariana",
+    name: "Mariana Souza",
+    email: "mariana@docens.app",
+    role: "TEACHER",
+  },
+  {
+    id: "u-teacher-beatriz",
+    name: "Beatriz Lima",
+    email: "beatriz@docens.app",
+    role: "TEACHER",
+  },
 ];
 
 export const studentProfiles: StudentProfile[] = [
@@ -138,6 +165,30 @@ export const teacherProfiles: TeacherProfile[] = [
     photo: "RP",
     bio: "Ex-insper com foco em calculo e estatistica aplicada para graduacao e vestibulares concorridos.",
     headline: "Calculo, estatistica e raciocinio quantitativo",
+    isVerified: true,
+  },
+  {
+    id: "tp-carlos",
+    userId: "u-teacher-carlos",
+    photo: "CM",
+    bio: "Engenheiro com mestrado em Matematica Aplicada. Especialista em preparacao para vestibulares de alta concorrencia com foco em resolucao de problemas.",
+    headline: "Matematica e ciencias exatas",
+    isVerified: true,
+  },
+  {
+    id: "tp-mariana",
+    userId: "u-teacher-mariana",
+    photo: "MS",
+    bio: "Mestre em Letras pela USP. Especialista em redacao dissertativa e analise literaria para FUVEST e ENEM.",
+    headline: "Lingua portuguesa e literatura",
+    isVerified: false,
+  },
+  {
+    id: "tp-beatriz",
+    userId: "u-teacher-beatriz",
+    photo: "BL",
+    bio: "Doutoranda em Biologia Molecular. Ensina ciencias da natureza com abordagem pratica e contextualizada.",
+    headline: "Biologia e quimica para vestibulares",
     isVerified: true,
   },
 ];
@@ -195,37 +246,98 @@ export const institutions: Institution[] = [
 ];
 
 export const subjects: Subject[] = [
-  { id: "sub-calculo", name: "Calculo I" },
-  { id: "sub-direito", name: "Direito Constitucional" },
-  { id: "sub-fisica", name: "Fisica" },
-  { id: "sub-redacao", name: "Redacao" },
+  { id: "sub-calculo", name: "Calculo I", icon: "∑" },
+  { id: "sub-direito", name: "Direito Constitucional", icon: "⚖" },
+  { id: "sub-fisica", name: "Fisica", icon: "⚛" },
+  { id: "sub-redacao", name: "Redacao", icon: "✍" },
+  { id: "sub-matematica", name: "Matematica", icon: "∑" },
+  { id: "sub-portugues", name: "Lingua Portuguesa", icon: "📖" },
+  { id: "sub-biologia", name: "Biologia", icon: "🧬" },
+  { id: "sub-quimica", name: "Quimica", icon: "⚗" },
+  { id: "sub-historia", name: "Historia", icon: "🏛" },
+  { id: "sub-literatura", name: "Literatura", icon: "📚" },
+  { id: "sub-geografia", name: "Geografia", icon: "🌎" },
+  { id: "sub-estatistica", name: "Estatistica", icon: "📊" },
+  { id: "sub-ingles", name: "Ingles", icon: "🌐" },
+];
+
+export const institutionSubjects: InstitutionSubject[] = [
+  // Colegio Mobile — Ensino Medio
+  { id: "is-mobile-1-mat", institutionId: "ins-mobile", subjectId: "sub-matematica", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-mobile-1-por", institutionId: "ins-mobile", subjectId: "sub-portugues", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-mobile-1-bio", institutionId: "ins-mobile", subjectId: "sub-biologia", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-mobile-1-fis", institutionId: "ins-mobile", subjectId: "sub-fisica", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-mobile-1-his", institutionId: "ins-mobile", subjectId: "sub-historia", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-mobile-1-ing", institutionId: "ins-mobile", subjectId: "sub-ingles", yearLabel: "1º Ano", yearOrder: 1 },
+
+  { id: "is-mobile-2-mat", institutionId: "ins-mobile", subjectId: "sub-matematica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-mobile-2-por", institutionId: "ins-mobile", subjectId: "sub-portugues", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-mobile-2-qui", institutionId: "ins-mobile", subjectId: "sub-quimica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-mobile-2-fis", institutionId: "ins-mobile", subjectId: "sub-fisica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-mobile-2-lit", institutionId: "ins-mobile", subjectId: "sub-literatura", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-mobile-2-geo", institutionId: "ins-mobile", subjectId: "sub-geografia", yearLabel: "2º Ano", yearOrder: 2 },
+
+  { id: "is-mobile-3-mat", institutionId: "ins-mobile", subjectId: "sub-matematica", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-mobile-3-red", institutionId: "ins-mobile", subjectId: "sub-redacao", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-mobile-3-qui", institutionId: "ins-mobile", subjectId: "sub-quimica", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-mobile-3-bio", institutionId: "ins-mobile", subjectId: "sub-biologia", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-mobile-3-fis", institutionId: "ins-mobile", subjectId: "sub-fisica", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-mobile-3-his", institutionId: "ins-mobile", subjectId: "sub-historia", yearLabel: "3º Ano", yearOrder: 3 },
+
+  // Colegio Bandeirantes — Ensino Medio
+  { id: "is-band-1-mat", institutionId: "ins-band", subjectId: "sub-matematica", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-band-1-fis", institutionId: "ins-band", subjectId: "sub-fisica", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-band-1-por", institutionId: "ins-band", subjectId: "sub-portugues", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-band-2-qui", institutionId: "ins-band", subjectId: "sub-quimica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-band-2-mat", institutionId: "ins-band", subjectId: "sub-matematica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-band-2-bio", institutionId: "ins-band", subjectId: "sub-biologia", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-band-3-red", institutionId: "ins-band", subjectId: "sub-redacao", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-band-3-fis", institutionId: "ins-band", subjectId: "sub-fisica", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-band-3-mat", institutionId: "ins-band", subjectId: "sub-matematica", yearLabel: "3º Ano", yearOrder: 3 },
+
+  // Colegio Vertice — Ensino Medio
+  { id: "is-vert-1-mat", institutionId: "ins-vertice", subjectId: "sub-matematica", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-vert-1-por", institutionId: "ins-vertice", subjectId: "sub-portugues", yearLabel: "1º Ano", yearOrder: 1 },
+  { id: "is-vert-2-qui", institutionId: "ins-vertice", subjectId: "sub-quimica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-vert-2-fis", institutionId: "ins-vertice", subjectId: "sub-fisica", yearLabel: "2º Ano", yearOrder: 2 },
+  { id: "is-vert-3-red", institutionId: "ins-vertice", subjectId: "sub-redacao", yearLabel: "3º Ano", yearOrder: 3 },
+  { id: "is-vert-3-mat", institutionId: "ins-vertice", subjectId: "sub-matematica", yearLabel: "3º Ano", yearOrder: 3 },
+
+  // FGV — Graduacao em Direito
+  { id: "is-fgv-1-red", institutionId: "ins-fgv", subjectId: "sub-redacao", yearLabel: "1º Periodo", yearOrder: 1 },
+  { id: "is-fgv-2-dir", institutionId: "ins-fgv", subjectId: "sub-direito", yearLabel: "2º Periodo", yearOrder: 2 },
+  { id: "is-fgv-3-dir", institutionId: "ins-fgv", subjectId: "sub-direito", yearLabel: "3º Periodo", yearOrder: 3 },
+  { id: "is-fgv-3-calc", institutionId: "ins-fgv", subjectId: "sub-calculo", yearLabel: "3º Periodo", yearOrder: 3 },
+
+  // Insper — Engenharia / Administracao
+  { id: "is-insper-1-calc", institutionId: "ins-insper", subjectId: "sub-calculo", yearLabel: "1º Periodo", yearOrder: 1 },
+  { id: "is-insper-1-fis", institutionId: "ins-insper", subjectId: "sub-fisica", yearLabel: "1º Periodo", yearOrder: 1 },
+  { id: "is-insper-2-calc", institutionId: "ins-insper", subjectId: "sub-calculo", yearLabel: "2º Periodo", yearOrder: 2 },
+  { id: "is-insper-2-est", institutionId: "ins-insper", subjectId: "sub-estatistica", yearLabel: "2º Periodo", yearOrder: 2 },
+  { id: "is-insper-3-est", institutionId: "ins-insper", subjectId: "sub-estatistica", yearLabel: "3º Periodo", yearOrder: 3 },
+
+  // Inteli — Tecnologia e Lideranca
+  { id: "is-inteli-1-calc", institutionId: "ins-inteli", subjectId: "sub-calculo", yearLabel: "1º Periodo", yearOrder: 1 },
+  { id: "is-inteli-1-fis", institutionId: "ins-inteli", subjectId: "sub-fisica", yearLabel: "1º Periodo", yearOrder: 1 },
+  { id: "is-inteli-2-est", institutionId: "ins-inteli", subjectId: "sub-estatistica", yearLabel: "2º Periodo", yearOrder: 2 },
+  { id: "is-inteli-2-calc", institutionId: "ins-inteli", subjectId: "sub-calculo", yearLabel: "2º Periodo", yearOrder: 2 },
 ];
 
 export const teacherSubjects: TeacherSubject[] = [
-  {
-    id: "ts-1",
-    teacherProfileId: "tp-luiza",
-    subjectId: "sub-direito",
-    levelTag: "Graduacao",
-  },
-  {
-    id: "ts-2",
-    teacherProfileId: "tp-luiza",
-    subjectId: "sub-redacao",
-    levelTag: "Vestibular",
-  },
-  {
-    id: "ts-3",
-    teacherProfileId: "tp-rafael",
-    subjectId: "sub-calculo",
-    levelTag: "Graduacao",
-  },
-  {
-    id: "ts-4",
-    teacherProfileId: "tp-rafael",
-    subjectId: "sub-fisica",
-    levelTag: "Vestibular",
-  },
+  { id: "ts-1", teacherProfileId: "tp-luiza", subjectId: "sub-direito", levelTag: "Graduacao" },
+  { id: "ts-2", teacherProfileId: "tp-luiza", subjectId: "sub-redacao", levelTag: "Vestibular" },
+  { id: "ts-3", teacherProfileId: "tp-rafael", subjectId: "sub-calculo", levelTag: "Graduacao" },
+  { id: "ts-4", teacherProfileId: "tp-rafael", subjectId: "sub-fisica", levelTag: "Vestibular" },
+  { id: "ts-5", teacherProfileId: "tp-rafael", subjectId: "sub-estatistica", levelTag: "Graduacao" },
+  { id: "ts-6", teacherProfileId: "tp-carlos", subjectId: "sub-matematica", levelTag: "Vestibular" },
+  { id: "ts-7", teacherProfileId: "tp-carlos", subjectId: "sub-fisica", levelTag: "Vestibular" },
+  { id: "ts-8", teacherProfileId: "tp-carlos", subjectId: "sub-quimica", levelTag: "Vestibular" },
+  { id: "ts-9", teacherProfileId: "tp-mariana", subjectId: "sub-portugues", levelTag: "Vestibular" },
+  { id: "ts-10", teacherProfileId: "tp-mariana", subjectId: "sub-literatura", levelTag: "Vestibular" },
+  { id: "ts-11", teacherProfileId: "tp-mariana", subjectId: "sub-redacao", levelTag: "Vestibular" },
+  { id: "ts-12", teacherProfileId: "tp-beatriz", subjectId: "sub-biologia", levelTag: "Vestibular" },
+  { id: "ts-13", teacherProfileId: "tp-beatriz", subjectId: "sub-quimica", levelTag: "Vestibular" },
+  { id: "ts-14", teacherProfileId: "tp-beatriz", subjectId: "sub-historia", levelTag: "Vestibular" },
 ];
 
 export const classEvents: ClassEvent[] = [
@@ -324,6 +436,145 @@ export const classEvents: ClassEvent[] = [
     capacity: 40,
     soldSeats: 0,
     publicationStatus: "DRAFT",
+    meetingStatus: "LOCKED",
+  },
+
+  // Colegio Mobile — novas aulas
+  {
+    id: "ce-mobile-matematica",
+    title: "Matematica: Funcoes e Graficos para o Vestibular",
+    description: "Aulao com resolucao intensiva de questoes de funcoes, trigonometria e geometria analitica para 3a fase.",
+    teacherProfileId: "tp-carlos",
+    subjectId: "sub-matematica",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(3, 18, 0),
+    durationMin: 120,
+    priceCents: 9900,
+    capacity: 60,
+    soldSeats: 22,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-matematica-2",
+    title: "Matematica: Probabilidade e Combinatoria",
+    description: "Sessao pratica com foco em probabilidade condicional e analise combinatoria aplicada aos vestibulares concorridos.",
+    teacherProfileId: "tp-carlos",
+    subjectId: "sub-matematica",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(7, 19, 30),
+    durationMin: 90,
+    priceCents: 8900,
+    capacity: 50,
+    soldSeats: 18,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-quimica",
+    title: "Quimica Organica: Reacoes e Nomenclatura",
+    description: "Revisao completa de quimica organica com foco nas reacoes mais cobradas na segunda fase da FUVEST.",
+    teacherProfileId: "tp-beatriz",
+    subjectId: "sub-quimica",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(2, 15, 0),
+    durationMin: 90,
+    priceCents: 7900,
+    capacity: 40,
+    soldSeats: 38,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-portugues",
+    title: "Lingua Portuguesa: Interpretacao e Gramatica",
+    description: "Aula focada em interpretacao de textos literarios e gramatica contextualizada para vestibulares como FUVEST e UNICAMP.",
+    teacherProfileId: "tp-mariana",
+    subjectId: "sub-portugues",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(5, 17, 0),
+    durationMin: 100,
+    priceCents: 8500,
+    capacity: 55,
+    soldSeats: 30,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-literatura",
+    title: "Literatura Brasileira: Modernismo e Contemporaneo",
+    description: "Sessao aprofundada sobre as obras da lista da FUVEST com analise critica e producao de resposta discursiva.",
+    teacherProfileId: "tp-mariana",
+    subjectId: "sub-literatura",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(6, 18, 30),
+    durationMin: 90,
+    priceCents: 7900,
+    capacity: 45,
+    soldSeats: 12,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-biologia",
+    title: "Biologia Celular: Divisao e Genetica",
+    description: "Aulao sobre mitose, meiose e genetica mendeliana com exercicios de alta dificuldade para segunda fase.",
+    teacherProfileId: "tp-beatriz",
+    subjectId: "sub-biologia",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(4, 16, 0),
+    durationMin: 90,
+    priceCents: 7500,
+    capacity: 50,
+    soldSeats: 27,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-historia",
+    title: "Historia do Brasil: Republica e Seculo XX",
+    description: "Revisao tematica com analise de fontes primarias e contextualizacao para provas discursivas de historia.",
+    teacherProfileId: "tp-beatriz",
+    subjectId: "sub-historia",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(9, 17, 0),
+    durationMin: 80,
+    priceCents: 6900,
+    capacity: 60,
+    soldSeats: 10,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+  {
+    id: "ce-mobile-redacao",
+    title: "Redacao: Dissertacao Argumentativa para FUVEST",
+    description: "Workshop ao vivo com producao, correcao e reescrita de redacao seguindo os criterios da FUVEST e UNICAMP.",
+    teacherProfileId: "tp-mariana",
+    subjectId: "sub-redacao",
+    institutionId: "ins-mobile",
+    startsAt: isoAtOffset(10, 18, 0),
+    durationMin: 120,
+    priceCents: 9500,
+    capacity: 35,
+    soldSeats: 35,
+    publicationStatus: "PUBLISHED",
+    meetingStatus: "LOCKED",
+  },
+
+  // Insper — estatistica
+  {
+    id: "ce-insper-estatistica-2",
+    title: "Estatistica: Inferencia e Testes de Hipotese",
+    description: "Sessao pratica com foco em testes t, qui-quadrado e regressao linear aplicados a estudos de caso do Insper.",
+    teacherProfileId: "tp-rafael",
+    subjectId: "sub-estatistica",
+    institutionId: "ins-insper",
+    startsAt: isoAtOffset(5, 19, 0),
+    durationMin: 100,
+    priceCents: 13900,
+    capacity: 40,
+    soldSeats: 15,
+    publicationStatus: "PUBLISHED",
     meetingStatus: "LOCKED",
   },
 ];
@@ -470,6 +721,57 @@ export type StudentAccessState =
   | "PENDING_PAYMENT"
   | "WAITING_RELEASE"
   | "CAN_ENTER";
+
+export function getInstitutionSubjectsByYear(institutionId: string): Map<string, { yearLabel: string; yearOrder: number; subjects: Subject[] }> {
+  const entries = institutionSubjects.filter((is) => is.institutionId === institutionId);
+  const map = new Map<string, { yearLabel: string; yearOrder: number; subjects: Subject[] }>();
+
+  for (const entry of entries) {
+    const subject = getSubjectById(entry.subjectId);
+    if (!subject) continue;
+
+    if (!map.has(entry.yearLabel)) {
+      map.set(entry.yearLabel, { yearLabel: entry.yearLabel, yearOrder: entry.yearOrder, subjects: [] });
+    }
+    map.get(entry.yearLabel)!.subjects.push(subject);
+  }
+
+  return map;
+}
+
+export function getYearLevels(institutionId: string) {
+  const map = getInstitutionSubjectsByYear(institutionId);
+  return Array.from(map.values()).sort((a, b) => a.yearOrder - b.yearOrder);
+}
+
+export function getTeachersBySubjectAndInstitution(institutionId: string, subjectId: string): TeacherProfile[] {
+  const events = getPublishedClassEvents().filter(
+    (e) => e.institutionId === institutionId && e.subjectId === subjectId,
+  );
+  const teacherIds = Array.from(new Set(events.map((e) => e.teacherProfileId)));
+  return teacherIds
+    .map((id) => getTeacherById(id))
+    .filter((t): t is TeacherProfile => Boolean(t));
+}
+
+export function getClassEventsBySubjectAndInstitution(institutionId: string, subjectId: string) {
+  return getPublishedClassEvents()
+    .filter((e) => e.institutionId === institutionId && e.subjectId === subjectId)
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+}
+
+export function getNextClassEventForTeacher(institutionId: string, subjectId: string, teacherProfileId: string) {
+  const now = new Date();
+  return getPublishedClassEvents()
+    .filter(
+      (e) =>
+        e.institutionId === institutionId &&
+        e.subjectId === subjectId &&
+        e.teacherProfileId === teacherProfileId &&
+        new Date(e.startsAt).getTime() > now.getTime(),
+    )
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
+}
 
 export function getStudentAccessState(params: {
   classEvent: ClassEvent;

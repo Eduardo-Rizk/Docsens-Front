@@ -68,34 +68,35 @@ export default function ExplorePage() {
               placeholder="Buscar por nome da instituição..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all placeholder:text-muted-foreground/50"
+              className="w-full pl-12 pr-4 py-4 bg-surface border border-border focus:border-brand-accent focus:ring-1 focus:ring-brand-accent/20 outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
             />
           </motion.div>
         </div>
 
         {/* Filters */}
         <div className="flex justify-center mb-12">
-          <div className="flex p-1 bg-surface-hover/50 backdrop-blur-md rounded-full border border-white/5">
+          <div className="flex border border-border bg-surface">
             {[
               { id: "ALL", label: "Todas" },
               { id: "UNIVERSITY", label: "Faculdades" },
               { id: "SCHOOL", label: "Escolas" },
-            ].map((tab) => (
+            ].map((tab, i) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as Tab)}
                 className={cn(
-                  "px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 relative",
-                  activeTab === tab.id 
-                    ? "text-white" 
+                  "px-6 py-2.5 text-sm font-semibold transition-all duration-200 relative",
+                  i > 0 && "border-l border-border",
+                  activeTab === tab.id
+                    ? "text-background"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="active-filter-tab"
-                    className="absolute inset-0 bg-brand-primary rounded-full shadow-lg shadow-brand-primary/25"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    className="absolute inset-0 bg-brand-accent"
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                   />
                 )}
                 <span className="relative z-10">{tab.label}</span>
@@ -120,10 +121,7 @@ export default function ExplorePage() {
                 transition={{ duration: 0.3 }}
               >
                 <Link href={`/instituicoes/${inst.id}`}>
-                  <GlassCard className="h-full group flex flex-col justify-between overflow-hidden relative border-white/5 bg-gradient-to-br from-white/5 to-white/0 hover:border-brand-primary/30 min-h-[220px]">
-                    
-                    <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/0 via-brand-primary/5 to-brand-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                    
+                  <GlassCard className="h-full group flex flex-col justify-between overflow-hidden relative min-h-[220px]">
                     <div className="flex items-start justify-between mb-6">
                       <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white p-2 shadow-inner">
                         <Image
@@ -133,13 +131,13 @@ export default function ExplorePage() {
                           className="object-contain p-1"
                         />
                       </div>
-                      <div className="p-2 rounded-full glass group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                      <div className="p-2 rounded-full border border-border text-muted-foreground group-hover:border-brand-accent group-hover:text-brand-accent transition-colors duration-200">
                         <ArrowUpRight size={20} />
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-display font-bold mb-2 group-hover:text-brand-primary transition-colors">
+                      <h3 className="text-xl font-display font-bold mb-2 group-hover:text-brand-accent transition-colors duration-200">
                         {inst.shortName}
                       </h3>
                       <p className="text-sm text-muted-foreground line-clamp-1">{inst.name}</p>

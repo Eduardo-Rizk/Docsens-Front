@@ -3,76 +3,119 @@
 import Link from "next/link";
 import { AuthLayout } from "@/components/AuthLayout";
 
+const input =
+  "w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground/40 px-4 py-3 text-sm font-medium focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent/20 transition-all duration-200";
+
+const label =
+  "block text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60 mb-2";
+
 export default function RegisterPage() {
   return (
-    <AuthLayout 
-      title="Crie sua conta" 
-      subtitle="Junte-se a comunidade de aprendizado de elite."
+    <AuthLayout
+      title="Crie sua conta"
+      subtitle="Junte-se à comunidade de aprendizado de elite."
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium">Nome Completo</label>
-          <input 
+      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+        {/* Nome */}
+        <div>
+          <label htmlFor="name" className={label}>
+            Nome Completo
+          </label>
+          <input
             id="name"
-            type="text" 
+            type="text"
             placeholder="Seu nome"
-            className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+            className={input}
+            autoComplete="name"
           />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">Email</label>
-          <input 
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className={label}>
+            Email
+          </label>
+          <input
             id="email"
-            type="email" 
+            type="email"
             placeholder="seu@email.com"
-            className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+            className={input}
+            autoComplete="email"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium">Celular</label>
-            <input 
+        {/* Celular + Objetivo */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="phone" className={label}>
+              Celular
+            </label>
+            <input
               id="phone"
-              type="tel" 
+              type="tel"
               placeholder="(11) 99999-9999"
-              className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+              className={input}
+              autoComplete="tel"
             />
           </div>
-          
-          <div className="space-y-2">
-             <label htmlFor="goal" className="text-sm font-medium">Objetivo</label>
-             <select 
-               id="goal"
-               className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all appearance-none text-muted-foreground"
-             >
-               <option value="" disabled selected>Selecione</option>
-               <option value="vestibular">Passar no Vestibular</option>
-               <option value="graduacao">Reforço na Graduação</option>
-               <option value="carreira">Carreira / Mercado</option>
-             </select>
+          <div>
+            <label htmlFor="goal" className={label}>
+              Objetivo
+            </label>
+            <select
+              id="goal"
+              defaultValue=""
+              className={`${input} appearance-none cursor-pointer`}
+              style={{ color: "inherit" }}
+            >
+              <option value="" disabled style={{ background: "#0f0f12", color: "#71717a" }}>
+                Selecione
+              </option>
+              <option value="vestibular" style={{ background: "#0f0f12", color: "#fafafa" }}>
+                Vestibular
+              </option>
+              <option value="graduacao" style={{ background: "#0f0f12", color: "#fafafa" }}>
+                Graduação
+              </option>
+              <option value="carreira" style={{ background: "#0f0f12", color: "#fafafa" }}>
+                Carreira
+              </option>
+            </select>
           </div>
         </div>
-        
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium">Senha</label>
-          <input 
+
+        {/* Senha */}
+        <div>
+          <label htmlFor="password" className={label}>
+            Senha
+          </label>
+          <input
             id="password"
-            type="password" 
-            placeholder="No mínimo 8 caracteres"
-            className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+            type="password"
+            placeholder="Mínimo 8 caracteres"
+            className={input}
+            autoComplete="new-password"
           />
         </div>
 
-        <button className="w-full py-4 bg-brand-primary text-white rounded-xl font-semibold hover:shadow-[0_0_20px_-5px_rgba(var(--brand-primary),0.5)] transition-all active:scale-[0.98]">
+        {/* Divider */}
+        <div className="h-px bg-border" />
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full bg-brand-accent text-background font-bold text-xs uppercase tracking-[0.14em] py-3.5 hover:opacity-90 active:scale-[0.99] transition-all duration-150"
+        >
           Criar conta
         </button>
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-[11px] text-muted-foreground/50 tracking-wide">
         Já tem uma conta?{" "}
-        <Link href="/login" className="text-brand-primary hover:underline font-medium">
+        <Link
+          href="/login"
+          className="text-brand-accent font-semibold hover:opacity-70 transition-opacity duration-200"
+        >
           Entrar
         </Link>
       </p>

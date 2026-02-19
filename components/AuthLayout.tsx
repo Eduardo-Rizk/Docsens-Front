@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { AuthDecor3D } from "@/components/AuthDecor3D";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -7,49 +7,110 @@ interface AuthLayoutProps {
   subtitle: string;
 }
 
+
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left Panel - Form */}
-      <div className="flex flex-col justify-center px-4 sm:px-12 lg:px-20 py-12 relative z-10 bg-background">
-        <div className="w-full max-w-md mx-auto space-y-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-          >
-            <ArrowLeft size={16} />
-            Voltar para home
+
+      {/* ── LEFT: Form Panel ── */}
+      <div className="relative flex flex-col min-h-screen bg-background">
+        {/* Left edge accent */}
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-accent/30 to-transparent" />
+
+        {/* TOP — Logo */}
+        <div className="flex items-center justify-between px-10 pt-10 pb-0">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center bg-foreground shrink-0">
+              <span className="font-sans text-xs font-black text-background tracking-tighter">DS</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-sans text-sm font-bold tracking-tight text-foreground leading-none">DOCSENS</span>
+              <span className="text-[9px] font-medium uppercase tracking-[0.22em] text-brand-accent leading-none mt-0.5">live classes</span>
+            </div>
           </Link>
 
-          <div className="space-y-2">
-            <h1 className="text-3xl font-display font-bold">{title}</h1>
-            <p className="text-muted-foreground">{subtitle}</p>
-          </div>
+          <Link
+            href="/"
+            className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/40 hover:text-muted-foreground transition-colors duration-200"
+          >
+            ← Home
+          </Link>
+        </div>
 
-          {children}
+        {/* MIDDLE — Form (flex-1 to fill space) */}
+        <div className="flex-1 flex flex-col justify-center px-10 sm:px-16 lg:px-20 py-12">
+          <div className="w-full max-w-[440px]">
+            {/* Heading */}
+            <div className="mb-10 space-y-2">
+              <span className="text-[9px] font-bold uppercase tracking-[0.28em] text-brand-accent block">
+                // DOCSENS AUTH
+              </span>
+              <h1 className="font-display text-4xl font-black text-foreground leading-tight">{title}</h1>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-1">{subtitle}</p>
+              {/* Accent underline */}
+              <div className="h-px w-12 bg-brand-accent mt-4" />
+            </div>
+
+            {children}
+          </div>
+        </div>
+
+        {/* BOTTOM — Legal note */}
+        <div className="px-10 pb-8 pt-0">
+          <p className="text-[9px] text-muted-foreground/30 uppercase tracking-[0.16em]">
+            © 2024 Docsens · Todos os direitos reservados
+          </p>
         </div>
       </div>
 
-      {/* Right Panel - Artistic Background */}
-      <div className="hidden lg:flex relative overflow-hidden bg-surface items-center justify-center p-12">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-primary/20 via-background to-background" />
-        <div className="absolute top-0 right-0 w-full h-full bg-[url('/noise.png')] opacity-[0.03]" />
-        
-        <div className="relative z-10 max-w-lg text-center space-y-6">
-           {/* Abstract Visual */}
-           <div className="relative w-64 h-64 mx-auto mb-12">
-             <div className="absolute inset-0 bg-brand-primary/30 rounded-full blur-[60px] animate-pulse" />
-             <div className="relative glass w-full h-full rounded-3xl border-white/10 flex items-center justify-center rotate-6">
-               <span className="text-6xl">🎓</span>
-             </div>
-             <div className="absolute -bottom-6 -right-6 glass w-32 h-32 rounded-2xl border-white/10 flex items-center justify-center -rotate-12 animate-float">
-               <span className="text-4xl">🚀</span>
-             </div>
-           </div>
+      {/* ── RIGHT: Decorative Panel ── */}
+      <div
+        className="hidden lg:flex flex-col justify-between min-h-screen border-l border-border relative overflow-hidden"
+        style={{ background: "#08080b" }}
+      >
+        {/* Grid texture */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(34,211,238,0.035) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(34,211,238,0.035) 1px, transparent 1px)
+            `,
+            backgroundSize: "52px 52px",
+          }}
+        />
 
-           <blockquote className="text-2xl font-display font-medium leading-relaxed">
-             "O aprendizado não é um evento, é uma jornada. Comece a sua com quem já chegou lá."
-           </blockquote>
+        {/* Scan line */}
+        <div
+          className="absolute left-0 right-0 h-px pointer-events-none"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent)",
+            animation: "scan-line 5s linear infinite",
+          }}
+        />
+
+        {/* Corner marks */}
+        <div className="absolute top-6 left-6 w-6 h-6 border-t border-l border-brand-accent/30" />
+        <div className="absolute top-6 right-6 w-6 h-6 border-t border-r border-brand-accent/30" />
+        <div className="absolute bottom-6 left-6 w-6 h-6 border-b border-l border-brand-accent/20" />
+        <div className="absolute bottom-6 right-6 w-6 h-6 border-b border-r border-brand-accent/20" />
+
+        {/* ─ MIDDLE: 3D animation ─ */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-12 py-6">
+          <AuthDecor3D />
+
+          <div className="mt-8 text-center space-y-2">
+            <p className="font-display text-xl font-bold text-foreground/70 leading-snug">
+              "Aprenda com quem já chegou<br />onde você quer chegar."
+            </p>
+          </div>
+        </div>
+
+        {/* ─ BOTTOM: copyright ─ */}
+        <div className="relative z-10 px-12 pb-10">
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/25">
+            © 2024 Docsens
+          </p>
         </div>
       </div>
     </div>

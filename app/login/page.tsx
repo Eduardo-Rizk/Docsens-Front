@@ -3,44 +3,73 @@
 import Link from "next/link";
 import { AuthLayout } from "@/components/AuthLayout";
 
+const input =
+  "w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground/40 px-4 py-3 text-sm font-medium focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent/20 transition-all duration-200";
+
+const label =
+  "block text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60 mb-2";
+
 export default function LoginPage() {
   return (
-    <AuthLayout 
-      title="Bem-vindo de volta" 
+    <AuthLayout
+      title="Bem-vindo de volta"
       subtitle="Entre na sua conta para acessar seus aulões e mentorias."
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">Email</label>
-          <input 
+      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className={label}>
+            Email
+          </label>
+          <input
             id="email"
-            type="email" 
+            type="email"
             placeholder="seu@email.com"
-            className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label htmlFor="password" className="text-sm font-medium">Senha</label>
-            <Link href="#" className="text-xs text-brand-primary hover:underline">Esqueceu a senha?</Link>
-          </div>
-          <input 
-            id="password"
-            type="password" 
-            placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl glass bg-white/5 border-white/10 focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+            className={input}
+            autoComplete="email"
           />
         </div>
 
-        <button className="w-full py-4 bg-brand-primary text-white rounded-xl font-semibold hover:shadow-[0_0_20px_-5px_rgba(var(--brand-primary),0.5)] transition-all active:scale-[0.98]">
+        {/* Senha */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="password" className={label} style={{ marginBottom: 0 }}>
+              Senha
+            </label>
+            <Link
+              href="#"
+              className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-accent hover:opacity-70 transition-opacity duration-200"
+            >
+              Esqueceu?
+            </Link>
+          </div>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            className={input}
+            autoComplete="current-password"
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-border" />
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full bg-brand-accent text-background font-bold text-xs uppercase tracking-[0.14em] py-3.5 hover:opacity-90 active:scale-[0.99] transition-all duration-150"
+        >
           Entrar
         </button>
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-[11px] text-muted-foreground/50 tracking-wide">
         Não tem uma conta?{" "}
-        <Link href="/cadastro" className="text-brand-primary hover:underline font-medium">
+        <Link
+          href="/cadastro"
+          className="text-brand-accent font-semibold hover:opacity-70 transition-opacity duration-200"
+        >
           Criar conta
         </Link>
       </p>

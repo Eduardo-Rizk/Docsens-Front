@@ -1,23 +1,33 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-manrope);
-  --font-display: var(--font-syne);
+@theme inline {
+  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
 
-  --color-background: oklch(0.12 0.02 260);
-  --color-foreground: oklch(0.98 0 0);
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
+  --color-muted: #18181b;
+  --color-muted-foreground: #a1a1aa;
 
-  --color-brand-primary: oklch(0.65 0.22 260);
-  --color-brand-primary-foreground: oklch(0.98 0 0);
+  --color-brand-primary: #e4e4e7;
+  --color-brand-primary-foreground: #09090b;
 
-  --color-brand-secondary: oklch(0.88 0.22 100);
-  --color-brand-secondary-foreground: oklch(0.12 0.02 260);
+  --color-brand-secondary: #27272a;
+  --color-brand-secondary-foreground: #fafafa;
 
-  --color-brand-accent: oklch(0.7 0.25 320);
+  --color-brand-accent: #22d3ee;
 
-  --color-surface: oklch(0.18 0.03 260);
-  --color-surface-hover: oklch(0.22 0.03 260);
-  --color-border: oklch(0.25 0.03 260);
+  --color-surface: #0f0f12;
+  --color-surface-hover: #18181b;
+  --color-surface-raised: #141417;
+  --color-border: #27272a;
+  --color-border-subtle: #1c1c1f;
+
+  --color-destructive: #ef4444;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+
+  --radius: 0.25rem;
 }
 
 /* Base Styles */
@@ -25,17 +35,6 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
-  background-image:
-    radial-gradient(
-      circle at 15% 0%,
-      oklch(0.65 0.22 260 / 0.15),
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 85% 30%,
-      oklch(0.7 0.25 320 / 0.1),
-      transparent 40%
-    );
   min-height: 100vh;
 }
 
@@ -46,22 +45,38 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 /* Utilities */
 @utility glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 @utility glass-hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 @utility text-glow {
-  text-shadow: 0 0 20px currentColor;
+  text-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+}
+
+@utility industrial-border {
+  border: 1px solid var(--color-border);
+}
+
+@utility accent-glow {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15), 0 0 60px rgba(34, 211, 238, 0.05);
+}
+
+@utility grid-texture {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
 /* Animations */
@@ -71,10 +86,58 @@ h6 {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }
 
 @utility animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@utility animate-scan {
+  animation: scan-line 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@utility animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Selection */
+::selection {
+  background: rgba(34, 211, 238, 0.25);
+  color: #fafafa;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
 }

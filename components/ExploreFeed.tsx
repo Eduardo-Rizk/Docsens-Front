@@ -4,8 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, MapPin } from "lucide-react";
-import { institutions, type Institution } from "@/lib/domain";
+import { ArrowUpRight } from "lucide-react";
+import { institutions } from "@/lib/domain";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { cn } from "@/lib/utils";
 
@@ -20,49 +20,39 @@ export function ExploreFeed() {
 
   return (
     <section id="explore" className="py-20 px-4 sm:px-8 relative z-10">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-[1200px]">
+        {/* Section header */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-center md:text-left">
-            Explore por <span className="text-brand-accent">Instituição</span>
-          </h2>
+          <div className="text-center md:text-left">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-2 block">Instituicoes</span>
+            <h2 className="text-3xl sm:text-4xl font-sans font-bold tracking-tight text-balance">
+              Explore por Instituicao
+            </h2>
+          </div>
 
-          {/* Tabs */}
-          <div className="flex p-1 bg-surface-hover/50 backdrop-blur-md rounded-full border border-white/5">
+          {/* Tabs - industrial style */}
+          <div className="flex border border-border">
             <button
               onClick={() => setActiveTab("UNIVERSITY")}
               className={cn(
-                "px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 relative",
-                activeTab === "UNIVERSITY" 
-                  ? "text-brand-primary-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                "px-6 py-2.5 text-sm font-semibold transition-all duration-200 relative",
+                activeTab === "UNIVERSITY"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface"
               )}
             >
-              {activeTab === "UNIVERSITY" && (
-                <motion.div
-                  layoutId="active-tab"
-                  className="absolute inset-0 bg-brand-primary rounded-full shadow-lg shadow-brand-primary/25"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              <span className="relative z-10">Faculdades</span>
+              Faculdades
             </button>
             <button
               onClick={() => setActiveTab("SCHOOL")}
               className={cn(
-                "px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 relative",
-                activeTab === "SCHOOL" 
-                  ? "text-brand-secondary-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                "px-6 py-2.5 text-sm font-semibold transition-all duration-200 relative border-l border-border",
+                activeTab === "SCHOOL"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface"
               )}
             >
-              {activeTab === "SCHOOL" && (
-                <motion.div
-                  layoutId="active-tab"
-                  className="absolute inset-0 bg-brand-secondary rounded-full shadow-lg shadow-brand-secondary/25"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              <span className="relative z-10">Escolas</span>
+              Escolas
             </button>
           </div>
         </div>
@@ -70,42 +60,42 @@ export function ExploreFeed() {
         {/* Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           <AnimatePresence mode="popLayout">
-            {filteredInstitutions.map((inst) => (
+            {filteredInstitutions.map((inst, i) => (
               <motion.div
                 key={inst.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 layout
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
               >
                 <Link href={`/instituicoes/${inst.id}`}>
-                  <GlassCard className="h-full group flex flex-col justify-between overflow-hidden relative border-white/5 bg-gradient-to-br from-white/5 to-white/0 hover:border-brand-primary/30">
-                    
-                    {/* Hover Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/0 via-brand-primary/5 to-brand-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                    
+                  <GlassCard className="h-full group flex flex-col justify-between">
+                    {/* Hover scan line */}
+                    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-accent/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                     <div className="flex items-start justify-between mb-6">
-                      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white p-2 shadow-inner">
+                      <div className="relative w-14 h-14 overflow-hidden bg-foreground/5 border border-border flex items-center justify-center p-2">
                         <Image
                           src={inst.logoUrl}
                           alt={inst.name}
                           fill
-                          className="object-contain p-1"
+                          className="object-contain p-1.5"
                         />
                       </div>
-                      <div className="p-2 rounded-full glass group-hover:bg-brand-primary group-hover:text-white transition-colors">
-                        <ArrowUpRight size={20} />
+                      <div className="p-2 border border-border text-muted-foreground group-hover:border-brand-accent/40 group-hover:text-brand-accent transition-colors">
+                        <ArrowUpRight size={16} />
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-display font-bold mb-2 group-hover:text-brand-primary transition-colors">
+                      <h3 className="text-lg font-sans font-bold mb-1 group-hover:text-brand-accent transition-colors">
                         {inst.shortName}
                       </h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">{inst.city}</p>
                     </div>
                   </GlassCard>
                 </Link>

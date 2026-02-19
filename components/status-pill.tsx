@@ -1,10 +1,10 @@
 type Tone = "default" | "success" | "warn" | "muted";
 
 const toneClasses: Record<Tone, string> = {
-  default: "bg-[color:var(--brand-blue-soft)] text-[var(--brand-blue)]",
-  success: "bg-[#e7f6ec] text-[#1e6f35]",
-  warn: "bg-[color:var(--brand-accent-soft)] text-[#9a6a00]",
-  muted: "bg-[#f3f4f6] text-[#6b7280]",
+  default: "bg-brand-accent/10 text-brand-accent border-brand-accent/20",
+  success: "bg-success/10 text-success border-success/20",
+  warn: "bg-warning/10 text-warning border-warning/20",
+  muted: "bg-surface text-muted-foreground border-border",
 };
 
 export function StatusPill({
@@ -16,7 +16,7 @@ export function StatusPill({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${toneClasses[tone]}`}
+      className={`inline-flex items-center px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] border ${toneClasses[tone]}`}
     >
       {children}
     </span>

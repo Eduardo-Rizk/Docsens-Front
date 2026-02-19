@@ -1,24 +1,26 @@
-import type { Metadata } from "next";
-import { Syne, Manrope } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { AppShell } from "@/components/app-shell";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 });
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Docens | Marketplace de Aulões ao Vivo",
+  title: "Docsens | Marketplace de Auloes ao Vivo",
   description:
-    "Docens conecta alunos a ex-alunos de instituições de elite para encontros acadêmicos ao vivo.",
+    "Docsens conecta alunos a ex-alunos de instituicoes de elite para encontros academicos ao vivo. Plataforma industrial de aprendizado.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
@@ -27,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${syne.variable} ${manrope.variable}`}>
+    <html lang="pt-BR" className={`${inter.className} ${spaceGrotesk.className}`}>
       <body className="bg-background text-foreground antialiased font-sans">
         <AppShell>{children}</AppShell>
       </body>

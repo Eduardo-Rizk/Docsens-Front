@@ -69,7 +69,7 @@ export function Hero() {
             className="flex flex-wrap gap-2 pt-4 justify-center lg:justify-start"
           >
             {[
-              "Ao vivo · sem gravação",
+              "Ao vivo",
               "Pague por aula",
               "Professores verificados",
             ].map((prop) => (

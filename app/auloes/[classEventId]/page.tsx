@@ -192,8 +192,12 @@ export default async function ClassEventPage({ params, searchParams }: PageProps
               href={classEvent.meetingUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex w-full items-center justify-center rounded-sm bg-brand-accent px-4 py-4 text-sm font-bold uppercase tracking-wider text-black transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2.5 rounded-sm bg-brand-accent px-4 py-4 text-sm font-bold uppercase tracking-wider text-black shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-all hover:brightness-110 hover:shadow-[0_0_32px_rgba(34,211,238,0.55)]"
             >
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-black/50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-black" />
+              </span>
               Entrar na aula
             </a>
           )}

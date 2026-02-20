@@ -11,6 +11,7 @@ const navItems = [
   { href: "/", label: "Início" },
   { href: "/explorar", label: "Explorar" },
   { href: "/aluno/meus-auloes", label: "Minha Agenda" },
+  { href: "/professor/auloes", label: "Prof." },
 ];
 
 function isActive(pathname: string, href: string) {

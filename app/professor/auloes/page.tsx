@@ -1,128 +1,255 @@
 import Link from "next/link";
+import { ArrowRight, Users } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import {
+  getEnrollmentsByClass,
   getInstitutionById,
   getSubjectById,
-  getTeacherById,
   getTeacherClasses,
   viewer,
 } from "@/lib/domain";
-import { formatLongDate, formatTime } from "@/lib/format";
+import { formatLongDate, formatPrice, formatTime } from "@/lib/format";
 
-const publicationLabels = {
+const publicationConfig = {
   DRAFT: { label: "Rascunho", tone: "muted" as const },
   PUBLISHED: { label: "Publicado", tone: "default" as const },
   FINISHED: { label: "Finalizado", tone: "success" as const },
 };
 
-export default function TeacherPage() {
-  const teacher = getTeacherById(viewer.teacherProfileId);
+function SectionHeader({ label, count }: { label: string; count: number }) {
+  return (
+    <div className="flex items-center gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+        {label}
+      </p>
+      <span className="rounded-sm border border-border px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground/60">
+        {count}
+      </span>
+      <div className="h-px flex-1 bg-border/60" />
+    </div>
+  );
+}
+
+export default function TeacherAuloesPage() {
   const classes = getTeacherClasses(viewer.teacherProfileId);
+  const published = classes.filter((c) => c.publicationStatus === "PUBLISHED");
+  const drafts = classes.filter((c) => c.publicationStatus === "DRAFT");
+  const finished = classes.filter((c) => c.publicationStatus === "FINISHED");
 
   return (
     <div className="space-y-10">
-      <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-blue)]">
-          Area do Professor
-        </p>
-        <h1 className="font-display text-4xl leading-tight text-[var(--text-strong)] sm:text-5xl">
-          Publicacao de auloes
-        </h1>
-        <p className="max-w-2xl text-lg leading-relaxed">
-          Fluxo editorial para preparar encontros, definir horario e acompanhar
-          o estado de publicacao.
-        </p>
+      {/* Header */}
+      <header className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+            Meus Aulões
+          </h1>
+          <p className="text-base text-muted-foreground">
+            {published.length} publicado{published.length !== 1 ? "s" : ""}
+            {drafts.length > 0 && (
+              <span className="ml-2 text-muted-foreground/50">
+                · {drafts.length} rascunho{drafts.length !== 1 ? "s" : ""}
+              </span>
+            )}
+          </p>
+        </div>
+        <Link
+          href="/professor/dashboard"
+          className="shrink-0 text-xs font-semibold text-brand-accent hover:opacity-70 transition-opacity"
+        >
+          Ver dashboard →
+        </Link>
       </header>
 
-      <section className="panel p-6 sm:p-8">
-        <div className="grid gap-6 sm:grid-cols-[1.1fr,0.9fr]">
-          <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--brand-blue)]">
-              Novo encontro
-            </p>
-            <h2 className="font-display text-3xl text-[var(--text-strong)]">
-              Estruturar aulao antes de publicar
-            </h2>
-            <p className="text-sm leading-relaxed text-[#5f6975]">
-              Prof. {teacher?.headline}. O bloco abaixo serve como composicao de
-              pauta, com foco em clareza academica e tempo de encontro.
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-2xl border border-[var(--line-muted)] bg-white p-4">
-            <div className="rounded-xl border border-[var(--line-muted)] p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#74808c]">
-                Titulo do aulao
-              </p>
-              <p className="mt-1 font-medium text-[var(--text-strong)]">
-                Laboratorio de Casos Publicos
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-[var(--line-muted)] p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#74808c]">
-                  Instituicao
-                </p>
-                <p className="mt-1 font-medium text-[var(--text-strong)]">FGV</p>
-              </div>
-              <div className="rounded-xl border border-[var(--line-muted)] p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#74808c]">
-                  Tema
-                </p>
-                <p className="mt-1 font-medium text-[var(--text-strong)]">
-                  Direito Constitucional
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="w-full rounded-full bg-[var(--brand-accent)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-[#5b4300] transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              Publicar agenda
-            </button>
-          </div>
+      {classes.length === 0 ? (
+        <div className="rounded-sm border border-border bg-surface p-12 text-center">
+          <p className="font-display text-2xl text-foreground">Nenhum aulão ainda</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Crie seu primeiro aulão para começar a receber alunos.
+          </p>
+          <Link
+            href="/professor/novo-aulao"
+            className="mt-6 inline-flex items-center gap-2 rounded-sm bg-brand-accent px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black hover:brightness-110 transition-all"
+          >
+            Criar aulão
+          </Link>
         </div>
-      </section>
+      ) : (
+        <div className="space-y-10">
 
-      <section className="space-y-3">
-        {classes.map((classEvent) => {
-          const subject = getSubjectById(classEvent.subjectId);
-          const institution = getInstitutionById(classEvent.institutionId);
-          const publication = publicationLabels[classEvent.publicationStatus];
+          {/* ── Publicados ─────────────────────────── */}
+          {published.length > 0 && (
+            <section className="space-y-3">
+              <SectionHeader label="Publicados" count={published.length} />
+              <div className="flex flex-col gap-2">
+                {published.map((classEvent) => {
+                  const institution = getInstitutionById(classEvent.institutionId);
+                  const subject = getSubjectById(classEvent.subjectId);
+                  const enrollmentCount = getEnrollmentsByClass(classEvent.id).filter(
+                    (e) => e.status === "PAID"
+                  ).length;
+                  const pub = publicationConfig[classEvent.publicationStatus];
 
-          return (
-            <article key={classEvent.id} className="event-link !grid-cols-[90px,1fr,auto]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#7a8490]">
-                  {formatLongDate(classEvent.startsAt)}
-                </p>
-                <p className="font-display text-3xl leading-none text-[var(--text-strong)]">
-                  {formatTime(classEvent.startsAt)}
-                </p>
+                  return (
+                    <article
+                      key={classEvent.id}
+                      className="group relative flex flex-col gap-4 rounded-sm border border-border bg-surface p-5 transition-all hover:border-zinc-700 hover:bg-zinc-900/60 sm:flex-row sm:items-center sm:gap-6"
+                    >
+                      {/* Date/time */}
+                      <div className="w-28 shrink-0 space-y-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
+                          {formatLongDate(classEvent.startsAt).split(",")[0]}
+                        </p>
+                        <p className="font-display text-2xl leading-none text-foreground">
+                          {formatTime(classEvent.startsAt)}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {formatLongDate(classEvent.startsAt).split(",").slice(1).join(",").trim()}
+                        </p>
+                      </div>
+
+                      <div className="hidden h-12 w-px bg-border sm:block" />
+
+                      {/* Info */}
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="font-display text-lg leading-snug text-foreground">
+                          {classEvent.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {institution?.shortName} · {subject?.name}
+                          <span className="ml-2 text-muted-foreground/50">
+                            · {classEvent.durationMin} min
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* Meta + links */}
+                      <div className="flex shrink-0 flex-wrap items-center gap-3">
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Users size={11} />
+                          {enrollmentCount}/{classEvent.capacity}
+                        </span>
+                        <span className="text-xs font-semibold text-foreground">
+                          {formatPrice(classEvent.priceCents)}
+                        </span>
+                        <StatusPill tone={pub.tone}>{pub.label}</StatusPill>
+                        <Link
+                          href={`/professor/auloes/${classEvent.id}/compradores`}
+                          className="text-[10px] font-bold uppercase tracking-wider text-brand-accent hover:opacity-70 transition-opacity"
+                        >
+                          Compradores
+                        </Link>
+                        <Link
+                          href={`/auloes/${classEvent.id}`}
+                          className="text-muted-foreground/40 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-brand-accent"
+                        >
+                          <ArrowRight size={14} />
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
+            </section>
+          )}
 
-              <div className="space-y-2">
-                <p className="font-display text-2xl leading-tight text-[var(--text-strong)]">
-                  {classEvent.title}
-                </p>
-                <p className="text-sm text-[#65717d]">
-                  {institution?.shortName} • {subject?.name}
-                </p>
-              </div>
+          {/* ── Rascunhos ─────────────────────────── */}
+          {drafts.length > 0 && (
+            <section className="space-y-3">
+              <SectionHeader label="Rascunhos" count={drafts.length} />
+              <div className="flex flex-col gap-2">
+                {drafts.map((classEvent) => {
+                  const institution = getInstitutionById(classEvent.institutionId);
+                  const subject = getSubjectById(classEvent.subjectId);
+                  const pub = publicationConfig[classEvent.publicationStatus];
 
-              <div className="flex flex-col items-end gap-2">
-                <StatusPill tone={publication.tone}>{publication.label}</StatusPill>
-                <Link
-                  href={`/auloes/${classEvent.id}`}
-                  className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--brand-blue)] transition-transform duration-200 hover:translate-x-1"
-                >
-                  Ver pagina
-                </Link>
+                  return (
+                    <article
+                      key={classEvent.id}
+                      className="flex flex-col gap-4 rounded-sm border border-border/50 bg-surface/40 p-5 opacity-70 sm:flex-row sm:items-center sm:gap-6"
+                    >
+                      <div className="w-28 shrink-0 space-y-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
+                          {formatLongDate(classEvent.startsAt).split(",")[0]}
+                        </p>
+                        <p className="font-display text-2xl leading-none text-foreground">
+                          {formatTime(classEvent.startsAt)}
+                        </p>
+                      </div>
+                      <div className="hidden h-12 w-px bg-border sm:block" />
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="font-display text-lg leading-snug text-foreground">
+                          {classEvent.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {institution?.shortName} · {subject?.name}
+                        </p>
+                      </div>
+                      <StatusPill tone={pub.tone}>{pub.label}</StatusPill>
+                    </article>
+                  );
+                })}
               </div>
-            </article>
-          );
-        })}
-      </section>
+            </section>
+          )}
+
+          {/* ── Finalizados ───────────────────────── */}
+          {finished.length > 0 && (
+            <section className="space-y-3">
+              <SectionHeader label="Finalizados" count={finished.length} />
+              <div className="flex flex-col gap-2">
+                {finished.map((classEvent) => {
+                  const institution = getInstitutionById(classEvent.institutionId);
+                  const subject = getSubjectById(classEvent.subjectId);
+                  const enrollmentCount = getEnrollmentsByClass(classEvent.id).filter(
+                    (e) => e.status === "PAID"
+                  ).length;
+                  const pub = publicationConfig[classEvent.publicationStatus];
+
+                  return (
+                    <article
+                      key={classEvent.id}
+                      className="flex flex-col gap-4 rounded-sm border border-border/50 bg-surface/40 p-5 opacity-60 sm:flex-row sm:items-center sm:gap-6"
+                    >
+                      <div className="w-28 shrink-0 space-y-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
+                          {formatLongDate(classEvent.startsAt).split(",")[0]}
+                        </p>
+                        <p className="font-display text-2xl leading-none text-muted-foreground">
+                          {formatTime(classEvent.startsAt)}
+                        </p>
+                      </div>
+                      <div className="hidden h-12 w-px bg-border sm:block" />
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="font-display text-lg leading-snug text-muted-foreground">
+                          {classEvent.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground/60">
+                          {institution?.shortName} · {subject?.name}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground/60">
+                          <Users size={11} />
+                          {enrollmentCount} alunos
+                        </span>
+                        <StatusPill tone={pub.tone}>{pub.label}</StatusPill>
+                        <Link
+                          href={`/professor/auloes/${classEvent.id}/compradores`}
+                          className="text-[10px] font-bold uppercase tracking-wider text-brand-accent/60 hover:text-brand-accent transition-colors"
+                        >
+                          Compradores
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+        </div>
+      )}
     </div>
   );
 }

@@ -111,6 +111,30 @@ export const users: User[] = [
     role: "STUDENT",
   },
   {
+    id: "u-student-pedro",
+    name: "Pedro Alves",
+    email: "pedro.alves@aluno.docens.app",
+    role: "STUDENT",
+  },
+  {
+    id: "u-student-julia",
+    name: "Julia Santos",
+    email: "julia.santos@aluno.docens.app",
+    role: "STUDENT",
+  },
+  {
+    id: "u-student-marcos",
+    name: "Marcos Ferreira",
+    email: "marcos.ferreira@aluno.docens.app",
+    role: "STUDENT",
+  },
+  {
+    id: "u-student-camila",
+    name: "Camila Rocha",
+    email: "camila.rocha@aluno.docens.app",
+    role: "STUDENT",
+  },
+  {
     id: "u-teacher-luiza",
     name: "Luiza Costa",
     email: "luiza@docens.app",
@@ -146,6 +170,26 @@ export const studentProfiles: StudentProfile[] = [
   {
     id: "sp-ana",
     userId: "u-student-ana",
+    preferredInstitutionId: "ins-fgv",
+  },
+  {
+    id: "sp-pedro",
+    userId: "u-student-pedro",
+    preferredInstitutionId: "ins-fgv",
+  },
+  {
+    id: "sp-julia",
+    userId: "u-student-julia",
+    preferredInstitutionId: "ins-fgv",
+  },
+  {
+    id: "sp-marcos",
+    userId: "u-student-marcos",
+    preferredInstitutionId: "ins-insper",
+  },
+  {
+    id: "sp-camila",
+    userId: "u-student-camila",
     preferredInstitutionId: "ins-fgv",
   },
 ];
@@ -633,6 +677,59 @@ export const enrollments: Enrollment[] = [
     status: "PENDING",
     createdAt: isoAtOffset(-1, 16, 0),
   },
+  // Pedro — aulas da Luiza
+  {
+    id: "enr-pedro-fgv-argumentacao",
+    classEventId: "ce-fgv-argumentacao",
+    studentProfileId: "sp-pedro",
+    status: "PAID",
+    createdAt: isoAtOffset(-2, 11, 0),
+  },
+  {
+    id: "enr-pedro-fgv-redacao",
+    classEventId: "ce-fgv-redacao",
+    studentProfileId: "sp-pedro",
+    status: "PAID",
+    createdAt: isoAtOffset(-3, 9, 0),
+  },
+  // Julia — aulas da Luiza
+  {
+    id: "enr-julia-fgv-argumentacao",
+    classEventId: "ce-fgv-argumentacao",
+    studentProfileId: "sp-julia",
+    status: "PAID",
+    createdAt: isoAtOffset(-1, 20, 0),
+  },
+  {
+    id: "enr-julia-fgv-redacao-passada",
+    classEventId: "ce-fgv-redacao-passada",
+    studentProfileId: "sp-julia",
+    status: "PAID",
+    createdAt: isoAtOffset(-15, 8, 0),
+  },
+  // Marcos — aula da Luiza
+  {
+    id: "enr-marcos-fgv-argumentacao",
+    classEventId: "ce-fgv-argumentacao",
+    studentProfileId: "sp-marcos",
+    status: "PENDING",
+    createdAt: isoAtOffset(0, 8, 30),
+  },
+  // Camila — aulas da Luiza
+  {
+    id: "enr-camila-fgv-redacao",
+    classEventId: "ce-fgv-redacao",
+    studentProfileId: "sp-camila",
+    status: "PAID",
+    createdAt: isoAtOffset(-2, 14, 0),
+  },
+  {
+    id: "enr-camila-fgv-argumentacao",
+    classEventId: "ce-fgv-argumentacao",
+    studentProfileId: "sp-camila",
+    status: "PAID",
+    createdAt: isoAtOffset(-1, 17, 0),
+  },
   // Histórico
   {
     id: "enr-ana-insper-calculo-passado",
@@ -671,6 +768,56 @@ export const payments: Payment[] = [
     provider: "MOCK",
     amountCents: 8900,
     status: "PENDING",
+  },
+  // Pagamentos dos novos alunos
+  {
+    id: "pay-pedro-fgv-argumentacao",
+    enrollmentId: "enr-pedro-fgv-argumentacao",
+    provider: "STRIPE",
+    amountCents: 12900,
+    status: "SUCCEEDED",
+  },
+  {
+    id: "pay-pedro-fgv-redacao",
+    enrollmentId: "enr-pedro-fgv-redacao",
+    provider: "STRIPE",
+    amountCents: 9900,
+    status: "SUCCEEDED",
+  },
+  {
+    id: "pay-julia-fgv-argumentacao",
+    enrollmentId: "enr-julia-fgv-argumentacao",
+    provider: "MERCADOPAGO",
+    amountCents: 12900,
+    status: "SUCCEEDED",
+  },
+  {
+    id: "pay-julia-fgv-redacao-passada",
+    enrollmentId: "enr-julia-fgv-redacao-passada",
+    provider: "STRIPE",
+    amountCents: 9900,
+    status: "SUCCEEDED",
+  },
+  {
+    id: "pay-marcos-fgv-argumentacao",
+    enrollmentId: "enr-marcos-fgv-argumentacao",
+    provider: "MOCK",
+    amountCents: 12900,
+    status: "PENDING",
+  },
+  {
+    id: "pay-camila-fgv-redacao",
+    enrollmentId: "enr-camila-fgv-redacao",
+    provider: "MERCADOPAGO",
+    amountCents: 9900,
+    status: "SUCCEEDED",
+  },
+  {
+    id: "pay-camila-fgv-argumentacao",
+    enrollmentId: "enr-camila-fgv-argumentacao",
+    provider: "STRIPE",
+    amountCents: 12900,
+    status: "SUCCEEDED",
   },
 ];
 
@@ -823,6 +970,77 @@ export function getNextClassEventForTeacher(institutionId: string, subjectId: st
     )
     .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
 }
+
+// ── Professor area selectors ─────────────────────────────────────────────────
+
+export function getEnrollmentsByClass(classEventId: string): Enrollment[] {
+  return enrollments.filter((e) => e.classEventId === classEventId);
+}
+
+export function getPaymentByEnrollmentId(enrollmentId: string): Payment | undefined {
+  return payments.find((p) => p.enrollmentId === enrollmentId);
+}
+
+export function getStudentProfileById(studentProfileId: string): StudentProfile | undefined {
+  return studentProfiles.find((sp) => sp.id === studentProfileId);
+}
+
+export type ClassDashboardRow = {
+  classEvent: ClassEvent;
+  paidEnrollments: number;
+  revenueSucceededCents: number;
+};
+
+export type TeacherDashboard = {
+  totalRevenueSucceededCents: number;
+  totalPaidStudents: number;
+  totalClasses: number;
+  publishedClasses: number;
+  rows: ClassDashboardRow[];
+};
+
+export function getTeacherDashboard(teacherProfileId: string): TeacherDashboard {
+  const classes = getTeacherClasses(teacherProfileId);
+
+  const rows: ClassDashboardRow[] = classes.map((classEvent) => {
+    const classEnrollments = getEnrollmentsByClass(classEvent.id);
+    const paidEnrollments = classEnrollments.filter((e) => e.status === "PAID");
+    const revenueSucceededCents = paidEnrollments.reduce((sum, enrollment) => {
+      const payment = getPaymentByEnrollmentId(enrollment.id);
+      if (payment?.status === "SUCCEEDED") return sum + payment.amountCents;
+      return sum;
+    }, 0);
+    return { classEvent, paidEnrollments: paidEnrollments.length, revenueSucceededCents };
+  });
+
+  return {
+    totalRevenueSucceededCents: rows.reduce((s, r) => s + r.revenueSucceededCents, 0),
+    totalPaidStudents: rows.reduce((s, r) => s + r.paidEnrollments, 0),
+    totalClasses: classes.length,
+    publishedClasses: classes.filter((c) => c.publicationStatus === "PUBLISHED").length,
+    rows,
+  };
+}
+
+export type BuyerListItem = {
+  enrollment: Enrollment;
+  user: User;
+  payment: Payment | undefined;
+};
+
+export function getBuyerList(classEventId: string): BuyerListItem[] {
+  return getEnrollmentsByClass(classEventId)
+    .filter((e) => e.status === "PAID" || e.status === "PENDING")
+    .map((enrollment) => {
+      const studentProfile = getStudentProfileById(enrollment.studentProfileId);
+      const user = studentProfile ? getUserById(studentProfile.userId) : undefined;
+      const payment = getPaymentByEnrollmentId(enrollment.id);
+      return user ? { enrollment, user, payment } : null;
+    })
+    .filter((item): item is BuyerListItem => item !== null);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function getStudentAccessState(params: {
   classEvent: ClassEvent;

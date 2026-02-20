@@ -246,19 +246,19 @@ export const institutions: Institution[] = [
 ];
 
 export const subjects: Subject[] = [
-  { id: "sub-calculo", name: "Calculo I", icon: "∑" },
-  { id: "sub-direito", name: "Direito Constitucional", icon: "⚖" },
-  { id: "sub-fisica", name: "Fisica", icon: "⚛" },
-  { id: "sub-redacao", name: "Redacao", icon: "✍" },
-  { id: "sub-matematica", name: "Matematica", icon: "∑" },
-  { id: "sub-portugues", name: "Lingua Portuguesa", icon: "📖" },
-  { id: "sub-biologia", name: "Biologia", icon: "🧬" },
-  { id: "sub-quimica", name: "Quimica", icon: "⚗" },
-  { id: "sub-historia", name: "Historia", icon: "🏛" },
-  { id: "sub-literatura", name: "Literatura", icon: "📚" },
-  { id: "sub-geografia", name: "Geografia", icon: "🌎" },
-  { id: "sub-estatistica", name: "Estatistica", icon: "📊" },
-  { id: "sub-ingles", name: "Ingles", icon: "🌐" },
+  { id: "sub-calculo", name: "Calculo I", icon: "Sigma" },
+  { id: "sub-direito", name: "Direito Constitucional", icon: "Scale" },
+  { id: "sub-fisica", name: "Fisica", icon: "Atom" },
+  { id: "sub-redacao", name: "Redacao", icon: "PenLine" },
+  { id: "sub-matematica", name: "Matematica", icon: "Sigma" },
+  { id: "sub-portugues", name: "Lingua Portuguesa", icon: "BookOpen" },
+  { id: "sub-biologia", name: "Biologia", icon: "Dna" },
+  { id: "sub-quimica", name: "Quimica", icon: "FlaskConical" },
+  { id: "sub-historia", name: "Historia", icon: "Landmark" },
+  { id: "sub-literatura", name: "Estudos Literários", icon: "BookMarked" },
+  { id: "sub-geografia", name: "Geografia", icon: "Globe" },
+  { id: "sub-estatistica", name: "Estatistica", icon: "BarChart3" },
+  { id: "sub-ingles", name: "Ingles", icon: "Languages" },
 ];
 
 export const institutionSubjects: InstitutionSubject[] = [
@@ -643,6 +643,10 @@ export function getSubjectById(subjectId: string) {
 
 export function getTeacherById(teacherProfileId: string) {
   return teacherProfiles.find((teacher) => teacher.id === teacherProfileId);
+}
+
+export function getUserById(userId: string) {
+  return users.find((u) => u.id === userId);
 }
 
 export function getClassEventById(classEventId: string) {

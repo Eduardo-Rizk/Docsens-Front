@@ -6,6 +6,7 @@ import {
   getYearLevels,
   getTeachersBySubjectAndInstitution,
 } from "@/lib/domain";
+import { SubjectIcon } from "@/components/SubjectIcon";
 
 type PageProps = {
   params: Promise<{ institutionId: string }>;
@@ -123,9 +124,7 @@ export default async function InstitutionPage({ params }: PageProps) {
                     className={`group relative flex flex-col gap-3 rounded-sm border bg-gradient-to-b p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/40 ${colorClass}`}
                   >
                     {/* Icon */}
-                    <span className={`text-2xl leading-none ${iconColorClass}`} aria-hidden>
-                      {subject.icon ?? "◆"}
-                    </span>
+                    <SubjectIcon name={subject.icon} size={22} className={iconColorClass} />
 
                     {/* Name */}
                     <div className="flex-1">

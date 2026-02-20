@@ -7,6 +7,7 @@ import {
   getTeachersBySubjectAndInstitution,
 } from "@/lib/domain";
 import { SubjectIcon } from "@/components/SubjectIcon";
+import { BackLink } from "@/components/BackLink";
 
 type PageProps = {
   params: Promise<{ institutionId: string }>;
@@ -58,12 +59,7 @@ export default async function InstitutionPage({ params }: PageProps) {
     <div className="space-y-14">
       {/* Header */}
       <header className="space-y-6">
-        <Link
-          href="/explorar"
-          className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent transition-opacity duration-200 hover:opacity-70"
-        >
-          ← Voltar para instituições
-        </Link>
+        <BackLink href="/explorar" label="Instituições" />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-2">

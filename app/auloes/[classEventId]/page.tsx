@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BadgeCheck, Calendar, Clock, Timer, Users } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { SubjectIcon } from "@/components/SubjectIcon";
+import { BackLink } from "@/components/BackLink";
 import { BuyButton } from "./BuyButton";
 import {
   getClassEventById,
@@ -42,12 +43,10 @@ export default async function ClassEventPage({ params }: PageProps) {
     <div className="space-y-10">
       {/* Breadcrumb + pills */}
       <div className="space-y-4">
-        <Link
+        <BackLink
           href={`/instituicoes/${classEvent.institutionId}/materias/${classEvent.subjectId}`}
-          className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent transition-opacity hover:opacity-70"
-        >
-          ← {subject?.name}
-        </Link>
+          label={subject?.name ?? "Matéria"}
+        />
 
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill tone="default">{institution?.shortName}</StatusPill>

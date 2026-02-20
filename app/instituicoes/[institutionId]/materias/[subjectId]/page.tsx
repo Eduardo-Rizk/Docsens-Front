@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SubjectIcon } from "@/components/SubjectIcon";
+import { BackLink } from "@/components/BackLink";
 import {
   getInstitutionById,
   getSubjectById,
@@ -69,12 +70,7 @@ export default async function SubjectPage({ params }: PageProps) {
     <div className="space-y-12">
       {/* Breadcrumb + Header */}
       <header className="space-y-5">
-        <Link
-          href={`/instituicoes/${institutionId}`}
-          className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent transition-opacity duration-200 hover:opacity-70"
-        >
-          ← {institution.shortName}
-        </Link>
+        <BackLink href={`/instituicoes/${institutionId}`} label={institution.shortName} />
 
         <div className="space-y-3">
           <div className="flex items-center gap-3">

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BadgeCheck, Calendar, Clock, Timer, Users } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
+import { SubjectIcon } from "@/components/SubjectIcon";
+import { BuyButton } from "./BuyButton";
 import {
   getClassEventById,
   getEnrollmentForStudent,
@@ -8,6 +11,7 @@ import {
   getStudentAccessState,
   getSubjectById,
   getTeacherById,
+  getUserById,
   isClassSoldOut,
   viewer,
 } from "@/lib/domain";
@@ -15,37 +19,6 @@ import { formatLongDate, formatPrice, formatTime } from "@/lib/format";
 
 type PageProps = {
   params: Promise<{ classEventId: string }>;
-};
-
-const accessCopy = {
-  NEEDS_PURCHASE: {
-    title: "Reserva aberta",
-    description:
-      "Garanta acesso ao encontro. Depois da confirmacao, voce entra na agenda pessoal.",
-    action: "Reservar vaga",
-    tone: "default" as const,
-  },
-  PENDING_PAYMENT: {
-    title: "Pagamento em analise",
-    description:
-      "Seu pedido existe, mas o acesso sera confirmado assim que o pagamento for compensado.",
-    action: "Finalizar pagamento",
-    tone: "warn" as const,
-  },
-  WAITING_RELEASE: {
-    title: "Encontro confirmado",
-    description:
-      "Sua vaga esta garantida. O botao de entrada libera no horario da aula e com link publicado.",
-    action: "Aguardando abertura",
-    tone: "muted" as const,
-  },
-  CAN_ENTER: {
-    title: "Aula liberada",
-    description:
-      "Requisitos de acesso atendidos. Entre na sala ao vivo para iniciar o encontro.",
-    action: "Entrar na aula",
-    tone: "success" as const,
-  },
 };
 
 export default async function ClassEventPage({ params }: PageProps) {
@@ -59,105 +32,171 @@ export default async function ClassEventPage({ params }: PageProps) {
   const institution = getInstitutionById(classEvent.institutionId);
   const subject = getSubjectById(classEvent.subjectId);
   const teacher = getTeacherById(classEvent.teacherProfileId);
+  const teacherUser = teacher ? getUserById(teacher.userId) : undefined;
   const enrollment = getEnrollmentForStudent(classEvent.id, viewer.studentProfileId);
   const accessState = getStudentAccessState({ classEvent, enrollment });
   const soldOut = isClassSoldOut(classEvent);
+  const spotsLeft = classEvent.capacity - classEvent.soldSeats;
 
   return (
     <div className="space-y-10">
+      {/* Breadcrumb + pills */}
       <div className="space-y-4">
         <Link
-          href={`/instituicoes/${classEvent.institutionId}`}
-          className="inline-flex text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-blue)] transition-transform duration-200 hover:translate-x-1"
+          href={`/instituicoes/${classEvent.institutionId}/materias/${classEvent.subjectId}`}
+          className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent transition-opacity hover:opacity-70"
         >
-          Voltar para {institution?.name}
+          ← {subject?.name}
         </Link>
-        <div className="flex flex-wrap items-center gap-3">
+
+        <div className="flex flex-wrap items-center gap-2">
           <StatusPill tone="default">{institution?.shortName}</StatusPill>
           <StatusPill tone="muted">{subject?.name}</StatusPill>
-          <StatusPill tone={soldOut ? "warn" : "success"}>
-            {soldOut ? "Esgotado" : "Vagas ativas"}
-          </StatusPill>
+          {soldOut ? (
+            <StatusPill tone="warn">Esgotado</StatusPill>
+          ) : (
+            <StatusPill tone="success">
+              {spotsLeft} vaga{spotsLeft !== 1 ? "s" : ""}
+            </StatusPill>
+          )}
         </div>
       </div>
 
-      <section className="panel grid gap-8 p-6 sm:grid-cols-[1.2fr,0.8fr] sm:p-10">
-        <div className="space-y-5">
-          <h1 className="font-display text-4xl leading-tight text-[var(--text-strong)] sm:text-5xl">
-            {classEvent.title}
-          </h1>
-          <p className="max-w-2xl text-lg leading-relaxed">{classEvent.description}</p>
-          <div className="flex items-start gap-4 rounded-2xl border border-[var(--line-muted)] bg-white/80 p-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--brand-blue-soft)] font-semibold text-[var(--brand-blue)]">
-              {teacher?.photo}
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#7d8690]">
-                Professor convidado
-              </p>
-              <p className="font-semibold text-[var(--text-strong)]">
-                {teacher?.headline}
-              </p>
-              <p className="mt-1 text-sm text-[#65717d]">{teacher?.bio}</p>
-            </div>
+      {/* Main grid */}
+      <div className="grid gap-8 lg:grid-cols-[1fr,340px] lg:items-start">
+
+        {/* ── Left: content ─────────────────────────── */}
+        <div className="space-y-8">
+
+          {/* Title + description */}
+          <div className="space-y-4">
+            <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+              {classEvent.title}
+            </h1>
+            <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              {classEvent.description}
+            </p>
           </div>
+
+          {/* Teacher card */}
+          {teacher && (
+            <div className="flex items-start gap-5 rounded-sm border border-border bg-surface p-5">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-sm font-bold text-cyan-300">
+                {teacher.photo}
+              </div>
+              <div className="min-w-0">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
+                  Professor
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-display text-xl text-foreground">
+                    {teacherUser?.name ?? teacher.headline}
+                  </p>
+                  {teacher.isVerified && (
+                    <BadgeCheck size={16} className="shrink-0 text-brand-accent" />
+                  )}
+                </div>
+                <p className="mt-0.5 text-xs font-medium text-brand-accent/80">
+                  {teacher.headline}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {teacher.bio}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
-        <aside className="space-y-4 rounded-2xl border border-[var(--line-muted)] bg-white p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#7d8690]">
-            Horario do encontro
-          </p>
-          <p className="font-display text-3xl leading-none text-[var(--text-strong)]">
-            {formatTime(classEvent.startsAt)}
-          </p>
-          <p className="text-sm text-[#66717c]">{formatLongDate(classEvent.startsAt)}</p>
-          <div className="h-px bg-[var(--line-muted)]" />
-          <div className="flex items-baseline justify-between">
-            <p className="text-sm text-[#77818c]">Investimento</p>
-            <p className="font-display text-3xl text-[var(--text-strong)]">
+        {/* ── Right: purchase sidebar ────────────────── */}
+        <aside className="rounded-sm border border-border bg-surface p-6 space-y-6">
+
+          {/* Date + time */}
+          <div className="space-y-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+              Data do encontro
+            </p>
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2.5 text-sm text-foreground">
+                <Calendar size={14} className="shrink-0 text-brand-accent" />
+                {formatLongDate(classEvent.startsAt)}
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-foreground">
+                <Clock size={14} className="shrink-0 text-brand-accent" />
+                {formatTime(classEvent.startsAt)}
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                <Timer size={14} className="shrink-0" />
+                {classEvent.durationMin} min de duração
+              </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-border" />
+
+          {/* Price + spots */}
+          <div className="space-y-1.5">
+            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+              Investimento
+            </p>
+            <p className="font-display text-4xl text-foreground">
               {formatPrice(classEvent.priceCents)}
             </p>
-          </div>
-          <p className="text-sm text-[#66717c]">
-            Duracao prevista de {classEvent.durationMin} minutos.
-          </p>
-        </aside>
-      </section>
-
-      <section className="panel p-6 sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-2">
-            <StatusPill tone={accessCopy[accessState].tone}>
-              {accessCopy[accessState].title}
-            </StatusPill>
-            <p className="max-w-2xl text-sm leading-relaxed text-[#5f6874]">
-              {accessCopy[accessState].description}
-            </p>
+            {!soldOut && accessState === "NEEDS_PURCHASE" && (
+              <p className="flex items-center gap-1.5 text-xs text-emerald-400">
+                <Users size={11} />
+                {spotsLeft} vaga{spotsLeft !== 1 ? "s" : ""} restante{spotsLeft !== 1 ? "s" : ""}
+              </p>
+            )}
           </div>
 
-          {accessState === "CAN_ENTER" && classEvent.meetingUrl ? (
+          {/* CTA block — varies by access state */}
+          {accessState === "NEEDS_PURCHASE" && !soldOut && (
+            <BuyButton
+              classEventId={classEvent.id}
+              price={formatPrice(classEvent.priceCents)}
+            />
+          )}
+
+          {accessState === "NEEDS_PURCHASE" && soldOut && (
+            <div className="w-full rounded-sm border border-amber-500/20 bg-amber-500/5 px-4 py-3.5 text-center text-xs font-bold uppercase tracking-wider text-amber-400">
+              Esgotado
+            </div>
+          )}
+
+          {accessState === "PENDING_PAYMENT" && (
+            <div className="space-y-2">
+              <div className="w-full rounded-sm border border-amber-500/30 bg-amber-500/10 px-4 py-3.5 text-center text-xs font-bold uppercase tracking-wider text-amber-400">
+                Pagamento em análise
+              </div>
+              <p className="text-center text-xs text-muted-foreground">
+                O acesso será liberado após confirmação do pagamento.
+              </p>
+            </div>
+          )}
+
+          {accessState === "WAITING_RELEASE" && (
+            <div className="space-y-2">
+              <div className="w-full rounded-sm border border-emerald-500/30 bg-emerald-500/10 px-4 py-3.5 text-center text-xs font-bold uppercase tracking-wider text-emerald-400">
+                Vaga garantida
+              </div>
+              <p className="text-center text-xs text-muted-foreground">
+                O link de entrada será liberado no horário da aula.
+              </p>
+            </div>
+          )}
+
+          {accessState === "CAN_ENTER" && classEvent.meetingUrl && (
             <a
               href={classEvent.meetingUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-full bg-[var(--brand-accent)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-[#5b4300] transition-transform duration-200 hover:-translate-y-0.5"
+              className="flex w-full items-center justify-center rounded-sm bg-brand-accent px-4 py-4 text-sm font-bold uppercase tracking-wider text-black transition-opacity hover:opacity-90"
             >
-              {accessCopy[accessState].action}
+              Entrar na aula
             </a>
-          ) : (
-            <button
-              className={`rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] ${
-                accessState === "NEEDS_PURCHASE" || accessState === "PENDING_PAYMENT"
-                  ? "bg-[var(--brand-accent)] text-[#5b4300] transition-transform duration-200 hover:-translate-y-0.5"
-                  : "bg-[#f1f3f6] text-[#7b8490]"
-              }`}
-              type="button"
-            >
-              {accessCopy[accessState].action}
-            </button>
           )}
-        </div>
-      </section>
+        </aside>
+      </div>
     </div>
   );
 }

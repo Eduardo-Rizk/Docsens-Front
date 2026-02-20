@@ -116,7 +116,10 @@ export default async function SubjectPage({ params }: PageProps) {
           </Link>
         </div>
       ) : (
-        <TeacherGrid teachers={teacherCards} />
+        <TeacherGrid
+          teachers={teacherCards}
+          institutionId={institutionId}
+        />
       )}
     </div>
   );

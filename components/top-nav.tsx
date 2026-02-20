@@ -8,6 +8,7 @@ import { Menu, X, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+  { href: "/", label: "Início" },
   { href: "/explorar", label: "Explorar" },
   { href: "/aluno/meus-auloes", label: "Minha Agenda" },
 ];

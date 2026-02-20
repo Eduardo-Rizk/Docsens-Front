@@ -1,7 +1,5 @@
-"use client";
-
-import { useTransition } from "react";
-import { enrollInClass } from "./actions";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 export function BuyButton({
   classEventId,
@@ -10,16 +8,13 @@ export function BuyButton({
   classEventId: string;
   price: string;
 }) {
-  const [isPending, startTransition] = useTransition();
-
   return (
-    <button
-      type="button"
-      disabled={isPending}
-      onClick={() => startTransition(() => enrollInClass(classEventId))}
-      className="flex w-full items-center justify-center rounded-sm bg-brand-accent px-4 py-4 text-sm font-bold uppercase tracking-wider text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+    <Link
+      href={`/checkout/${classEventId}`}
+      className="flex w-full items-center justify-center gap-2 rounded-sm bg-brand-accent px-4 py-4 text-sm font-bold uppercase tracking-wider text-black transition-opacity hover:opacity-90"
     >
-      {isPending ? "Processando…" : `Garanta sua vaga · ${price}`}
-    </button>
+      Garanta sua vaga · {price}
+      <ArrowUpRight size={14} />
+    </Link>
   );
 }

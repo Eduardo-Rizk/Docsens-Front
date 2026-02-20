@@ -34,18 +34,14 @@ export function Hero() {
             <span>Marketplace Educacional</span>
           </motion.div>
 
-          <h1 className="font-sans text-5xl sm:text-7xl font-bold tracking-tight leading-[1.05]">
-            <span className="block text-foreground">
-              Docens
-            </span>
-            <span className="block text-xl sm:text-2xl mt-5 font-sans font-normal text-muted-foreground leading-relaxed">
-              O futuro do aprendizado{" "}
-              <span className="text-brand-accent">com quem vive o mercado.</span>
+          <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
+            <span className="block bg-gradient-to-br from-white via-sky-200 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              Aprenda com quem já passou pelo que você está vivendo.
             </span>
           </h1>
 
-          <p className="text-base text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Conectamos voce a ex-alunos de instituicoes de elite para mentorias e auloes ao vivo que transformam sua carreira.
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
+            Conecte-se com mentores experientes para mentorias e aulões ao vivo.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
@@ -65,22 +61,25 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Stats row */}
+          {/* Value props */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="flex gap-8 pt-6 justify-center lg:justify-start"
+            className="flex flex-wrap gap-2 pt-4 justify-center lg:justify-start"
           >
             {[
-              { value: "500+", label: "Alunos" },
-              { value: "50+", label: "Mentores" },
-              { value: "98%", label: "Satisfacao" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center lg:text-left">
-                <div className="text-2xl font-bold text-foreground font-sans">{stat.value}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</div>
-              </div>
+              "Ao vivo · sem gravação",
+              "Pague por aula",
+              "Professores verificados",
+            ].map((prop) => (
+              <span
+                key={prop}
+                className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted-foreground"
+              >
+                <span className="h-1 w-1 rounded-full bg-brand-accent" />
+                {prop}
+              </span>
             ))}
           </motion.div>
         </motion.div>

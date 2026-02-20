@@ -14,9 +14,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Docsens | Marketplace de Auloes ao Vivo",
+  title: "Docens | Marketplace de Auloes ao Vivo",
   description:
-    "Docsens conecta alunos a ex-alunos de instituicoes de elite para encontros academicos ao vivo. Plataforma industrial de aprendizado.",
+    "Docens conecta alunos a ex-alunos de instituicoes de elite para encontros academicos ao vivo. Plataforma industrial de aprendizado.",
 };
 
 export const viewport: Viewport = {

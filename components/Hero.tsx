@@ -36,7 +36,7 @@ export function Hero() {
 
           <h1 className="font-sans text-5xl sm:text-7xl font-bold tracking-tight leading-[1.05]">
             <span className="block text-foreground">
-              Docsens
+              Docens
             </span>
             <span className="block text-xl sm:text-2xl mt-5 font-sans font-normal text-muted-foreground leading-relaxed">
               O futuro do aprendizado{" "}

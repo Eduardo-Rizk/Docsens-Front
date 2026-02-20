@@ -24,7 +24,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <span className="font-sans text-xs font-black text-background tracking-tighter">DS</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-sans text-sm font-bold tracking-tight text-foreground leading-none">DOCSENS</span>
+              <span className="font-sans text-sm font-bold tracking-tight text-foreground leading-none">DOCENS</span>
               <span className="text-[9px] font-medium uppercase tracking-[0.22em] text-brand-accent leading-none mt-0.5">live classes</span>
             </div>
           </Link>
@@ -43,7 +43,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             {/* Heading */}
             <div className="mb-10 space-y-2">
               <span className="text-[9px] font-bold uppercase tracking-[0.28em] text-brand-accent block">
-                // DOCSENS AUTH
+                // DOCENS AUTH
               </span>
               <h1 className="font-display text-4xl font-black text-foreground leading-tight">{title}</h1>
               <p className="text-sm text-muted-foreground leading-relaxed mt-1">{subtitle}</p>
@@ -58,7 +58,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* BOTTOM — Legal note */}
         <div className="px-10 pb-8 pt-0">
           <p className="text-[9px] text-muted-foreground/30 uppercase tracking-[0.16em]">
-            © 2024 Docsens · Todos os direitos reservados
+            © 2024 Docens · Todos os direitos reservados
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* ─ BOTTOM: copyright ─ */}
         <div className="relative z-10 px-12 pb-10">
           <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/25">
-            © 2024 Docsens
+            © 2024 Docens
           </p>
         </div>
       </div>

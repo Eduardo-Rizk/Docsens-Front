@@ -34,7 +34,7 @@ export function TopNav() {
             </div>
             <div className="flex flex-col">
               <span className="font-sans text-base font-bold tracking-tight text-foreground leading-none">
-                DOCSENS
+                DOCENS
               </span>
               <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-brand-accent leading-none mt-0.5">
                 live classes

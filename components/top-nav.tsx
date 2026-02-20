@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/explorar", label: "Explorar" },
+  { href: "/aluno/meus-auloes", label: "Minha Agenda" },
 ];
 
 function isActive(pathname: string, href: string) {

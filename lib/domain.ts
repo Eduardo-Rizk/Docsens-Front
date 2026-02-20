@@ -577,6 +577,38 @@ export const classEvents: ClassEvent[] = [
     publicationStatus: "PUBLISHED",
     meetingStatus: "LOCKED",
   },
+
+  // ── Histórico (aulas já concluídas) ─────────────────────────────────────────
+  {
+    id: "ce-insper-calculo-passado",
+    title: "Calculo Intensivo: Integrais e Aplicacoes",
+    description: "Sessao focada em tecnicas de integracao e aplicacoes a problemas de area e volume para vestibulandos do Insper.",
+    teacherProfileId: "tp-rafael",
+    subjectId: "sub-calculo",
+    institutionId: "ins-insper",
+    startsAt: isoAtOffset(-7, 14, 0),
+    durationMin: 100,
+    priceCents: 14900,
+    capacity: 30,
+    soldSeats: 30,
+    publicationStatus: "FINISHED",
+    meetingStatus: "RELEASED",
+  },
+  {
+    id: "ce-fgv-redacao-passada",
+    title: "Redacao Intensiva: Dissertacao Argumentativa",
+    description: "Aulao com correcao ao vivo de redacoes enviadas pelos alunos, com foco em repertorio e coesao textual.",
+    teacherProfileId: "tp-luiza",
+    subjectId: "sub-redacao",
+    institutionId: "ins-fgv",
+    startsAt: isoAtOffset(-14, 18, 0),
+    durationMin: 120,
+    priceCents: 9900,
+    capacity: 25,
+    soldSeats: 25,
+    publicationStatus: "FINISHED",
+    meetingStatus: "RELEASED",
+  },
 ];
 
 export const enrollments: Enrollment[] = [
@@ -600,6 +632,21 @@ export const enrollments: Enrollment[] = [
     studentProfileId: "sp-ana",
     status: "PENDING",
     createdAt: isoAtOffset(-1, 16, 0),
+  },
+  // Histórico
+  {
+    id: "enr-ana-insper-calculo-passado",
+    classEventId: "ce-insper-calculo-passado",
+    studentProfileId: "sp-ana",
+    status: "PAID",
+    createdAt: isoAtOffset(-10, 10, 0),
+  },
+  {
+    id: "enr-ana-fgv-redacao-passada",
+    classEventId: "ce-fgv-redacao-passada",
+    studentProfileId: "sp-ana",
+    status: "PAID",
+    createdAt: isoAtOffset(-16, 10, 0),
   },
 ];
 

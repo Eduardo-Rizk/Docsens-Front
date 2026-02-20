@@ -20,10 +20,13 @@ import { formatLongDate, formatPrice, formatTime } from "@/lib/format";
 
 type PageProps = {
   params: Promise<{ classEventId: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
-export default async function ClassEventPage({ params }: PageProps) {
+export default async function ClassEventPage({ params, searchParams }: PageProps) {
   const { classEventId } = await params;
+  const { from } = await searchParams;
+  const fromAgenda = from === "agenda";
   const classEvent = getClassEventById(classEventId);
 
   if (!classEvent || classEvent.publicationStatus !== "PUBLISHED") {
@@ -44,8 +47,8 @@ export default async function ClassEventPage({ params }: PageProps) {
       {/* Breadcrumb + pills */}
       <div className="space-y-4">
         <BackLink
-          href={`/instituicoes/${classEvent.institutionId}/materias/${classEvent.subjectId}`}
-          label={subject?.name ?? "Matéria"}
+          href={fromAgenda ? "/aluno/meus-auloes" : `/instituicoes/${classEvent.institutionId}/materias/${classEvent.subjectId}`}
+          label={fromAgenda ? "Minha Agenda" : (subject?.name ?? "Matéria")}
         />
 
         <div className="flex flex-wrap items-center gap-2">

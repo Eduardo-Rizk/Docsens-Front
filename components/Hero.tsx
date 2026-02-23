@@ -3,8 +3,16 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play, BookOpen, Zap } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { getUserById, viewer } from "@/lib/domain";
 
 export function Hero() {
+  const searchParams = useSearchParams();
+  const previewGuest = searchParams.get("preview") === "guest";
+  const profile = previewGuest ? undefined : getUserById(viewer.userId);
+  const isLoggedIn = Boolean(profile);
+  const firstName = profile?.name.split(" ")[0] ?? "";
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 sm:px-8">
       {/* Industrial Grid Background */}
@@ -31,17 +39,21 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-3 py-1.5 border border-border bg-surface text-brand-accent text-xs font-semibold uppercase tracking-[0.15em] w-fit mx-auto lg:mx-0"
           >
             <Zap size={12} />
-            <span>Marketplace Educacional</span>
+            <span>{isLoggedIn ? "Seu Hub de Estudos" : "Hub de Aprendizado"}</span>
           </motion.div>
 
           <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
             <span className="block bg-gradient-to-br from-white via-sky-200 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              Aprenda com quem já passou pelo que você está vivendo.
+              {isLoggedIn
+                ? `Olá, ${firstName}. Vamos para o próximo aulão?`
+                : "Aprenda com quem já passou pelo que você está vivendo."}
             </span>
           </h1>
 
           <p className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Conecte-se com mentores experientes para mentorias e aulões ao vivo.
+            {isLoggedIn
+              ? "Seu perfil está pronto. Explore recomendações alinhadas às suas instituições e matérias."
+              : "Conecte-se com mentores experientes para mentorias e aulões ao vivo."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
@@ -54,10 +66,10 @@ export function Hero() {
             </Link>
 
             <Link
-              href="/professor/cadastro"
+              href={isLoggedIn ? "/aluno/perfil" : "/cadastro"}
               className="px-7 py-3.5 border border-border text-foreground font-semibold text-sm hover:bg-surface hover:border-muted-foreground/30 transition-all flex items-center justify-center active:scale-[0.98]"
             >
-              Quero ser mentor
+              {isLoggedIn ? "Ajustar meu perfil" : "Criar conta"}
             </Link>
           </div>
 

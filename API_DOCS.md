@@ -66,7 +66,7 @@ A API serve uma plataforma de marketplace de **aulas ao vivo (Aulões)** que con
   id: string;
   name: string;
   email: string;
-  role: "STUDENT" | "TEACHER" | "BOTH";
+  role: "STUDENT" | "TEACHER";
 }
 ```
 
@@ -93,7 +93,7 @@ A API serve uma plataforma de marketplace de **aulas ao vivo (Aulões)** que con
   bio: string;
   headline: string; // Ex: "Cálculo, estatística e raciocínio quantitativo"
   institutionIds: string[]; // Instituicoes em que deseja/aceita lecionar
-  subjectIds: string[];     // Materias que deseja lecionar
+  subjectIds: string[];     // Derivado da tabela teacher_subjects
   labels: string[];         // Tags livres do perfil
   isVerified: boolean;
 }
@@ -214,19 +214,24 @@ Cria uma nova conta de usuário. Usado na página `/cadastro`.
 }
 ```
 
-| Campo            | Tipo       | Obrigatório | Validação                                                                                   |
-| ---------------- | ---------- | ----------- | ------------------------------------------------------------------------------------------- |
-| `name`           | string     | ✅          | Min 2 chars                                                                                 |
-| `email`          | string     | ✅          | Email válido, único                                                                         |
-| `phone`          | string     | ✅          | Formato brasileiro                                                                          |
-| `password`       | string     | ✅          | Min 8 chars                                                                                 |
-| `role`           | string     | ✅          | Enum: `"STUDENT"` ou `"TEACHER"`                                                            |
-| `institutionIds` | string[]   | ✅          | Ao menos 1 instituição válida                                                               |
-| `labels`         | string[]   | ❌          | Máx 15 labels, cada label máx 40 chars                                                     |
-| `subjectIds`     | string[]   | ✅*         | Obrigatório quando `role=TEACHER`; cada item deve existir em `subjects`                    |
-| `photoUrl`       | string     | ❌          | URL válida; recomendado usar endpoint de upload antes de registrar                          |
+| Campo            | Tipo     | Obrigatório | Validação                                                                                         |
+| ---------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| `name`           | string   | ✅          | Min 2 chars                                                                                       |
+| `email`          | string   | ✅          | Email válido, único                                                                               |
+| `phone`          | string   | ✅          | Formato brasileiro                                                                                |
+| `password`       | string   | ✅          | Min 8 chars                                                                                       |
+| `role`           | string   | ✅          | Enum: `"STUDENT"` ou `"TEACHER"`                                                                  |
+| `institutionIds` | string[] | ✅          | Ao menos 1 instituição válida, sem duplicados                                                     |
+| `labels`         | string[] | ❌          | Máx 15 labels, cada label máx 40 chars, sem duplicados após normalização                         |
+| `subjectIds`     | string[] | ✅*         | Obrigatório quando `role=TEACHER`; IDs válidos em `subjects`, sem duplicados                     |
+| `photoUrl`       | string   | ❌          | URL válida (recomendado via upload endpoint)                                                      |
 
 \* `subjectIds` pode ser opcional para aluno.
+
+**Validações adicionais (register):**
+
+- `preferredInstitutionId` (quando enviado) deve estar contido em `institutionIds`
+- `labels` devem ser normalizadas no backend: `trim`, colapso de espaços e deduplicação case-insensitive
 
 **Response `201 Created`:**
 
@@ -328,6 +333,47 @@ Retorna o usuário autenticado e seus perfis. Usado pelo layout/navegação para
   "teacherProfile": null
 }
 ```
+
+---
+
+### `POST /uploads/profile-photo`
+
+Gera URL temporária para upload de foto de perfil (avatar do professor).  
+Usado antes de enviar `photoUrl` no `register` ou `PUT /teacher-profile`.
+
+**Auth:** público (recomendado proteger com rate limit + captcha)
+
+**Request Body:**
+
+```json
+{
+  "filename": "perfil.jpg",
+  "contentType": "image/jpeg",
+  "sizeBytes": 248312
+}
+```
+
+| Campo         | Tipo   | Obrigatório | Validação                                   |
+| ------------- | ------ | ----------- | ------------------------------------------- |
+| `filename`    | string | ✅          | Extensão permitida: jpg, jpeg, png, webp    |
+| `contentType` | string | ✅          | `image/jpeg`, `image/png`, `image/webp`      |
+| `sizeBytes`   | number | ✅          | Max 5 MB                                     |
+
+**Response `200 OK`:**
+
+```json
+{
+  "uploadUrl": "https://storage.docens.app/presigned/...",
+  "publicUrl": "https://cdn.docens.app/profiles/u-abc123.jpg",
+  "expiresInSec": 600
+}
+```
+
+**Fluxo sugerido:**
+
+1. Front chama `POST /uploads/profile-photo`
+2. Front faz `PUT` binário no `uploadUrl`
+3. Front envia `publicUrl` como `photoUrl` no cadastro/edição de perfil
 
 ---
 
@@ -632,9 +678,11 @@ Atualiza o perfil do professor autenticado. Usado na página `/professor/perfil`
 | `photoUrl`       | string   | ❌          | URL válida                                     |
 | `headline`       | string   | ✅          | Max 100 chars                                  |
 | `bio`            | string   | ✅          | Max 500 chars                                  |
-| `institutionIds` | string[] | ✅          | Ao menos 1 instituição válida                  |
-| `subjectIds`     | string[] | ✅          | Ao menos 1 matéria válida                      |
-| `labels`         | string[] | ❌          | Máx 15 labels, cada label máx 40 chars        |
+| `institutionIds` | string[] | ✅          | Ao menos 1 instituição válida, sem duplicados  |
+| `subjectIds`     | string[] | ✅          | Ao menos 1 matéria válida, sem duplicados      |
+| `labels`         | string[] | ❌          | Máx 15 labels, sem duplicados após normalização |
+
+> `subjectIds` é payload de conveniência da API. Persistência recomendada: sincronizar a tabela `teacher_subjects`.
 
 **Response `200 OK`:**
 
@@ -671,11 +719,11 @@ Atualiza o perfil do aluno autenticado. Usado na página `/aluno/perfil`.
 }
 ```
 
-| Campo                    | Tipo     | Obrigatório | Validação                               |
-| ------------------------ | -------- | ----------- | --------------------------------------- |
-| `preferredInstitutionId` | string   | ❌          | Deve existir em `institutions`          |
-| `institutionIds`         | string[] | ✅          | Ao menos 1 instituição válida           |
-| `labels`                 | string[] | ❌          | Máx 15 labels, cada label máx 40 chars |
+| Campo                    | Tipo     | Obrigatório | Validação                                                       |
+| ------------------------ | -------- | ----------- | --------------------------------------------------------------- |
+| `preferredInstitutionId` | string   | ❌          | Deve existir em `institutions` e estar dentro de `institutionIds` |
+| `institutionIds`         | string[] | ✅          | Ao menos 1 instituição válida, sem duplicados                  |
+| `labels`                 | string[] | ❌          | Máx 15 labels, sem duplicados após normalização                |
 
 **Response `200 OK`:**
 
@@ -1266,6 +1314,16 @@ Lista os compradores de um aulão. Usado na página `/professor/auloes/[classEve
 | **Meeting URL protegido**       | `meetingUrl` só é exposto quando todas as condições forem atendidas: enrollment PAID + `now >= startsAt` + `meetingStatus = RELEASED` |
 | **Sem overlap de professor**    | Professor não pode ter 2 aulas no mesmo horário (verificar sobreposição no CREATE/UPDATE)                                             |
 
+### 🧩 Regras de Perfil
+
+| Regra                                         | Descrição                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| **Role fixo por conta**                       | Usuário é `STUDENT` ou `TEACHER` no registro; não existe `BOTH`          |
+| **preferredInstitution consistente**          | Se enviado, `preferredInstitutionId` deve estar dentro de `institutionIds` |
+| **Sem duplicados em listas**                 | `institutionIds`, `subjectIds` e `labels` devem ser deduplicados         |
+| **Normalização de labels**                    | Aplicar `trim`, colapso de espaços e comparação case-insensitive          |
+| **Persistência de matérias do professor**     | Fonte de verdade é `teacher_subjects` (não duplicar em `teacher_profiles`) |
+
 ### 🔄 Fluxo de Estado do Aluno
 
 ```
@@ -1391,6 +1449,7 @@ InstitutionSubject (M:N entre Institution e Subject)
 | `POST`  | `/auth/register`                                 | ❌    | Criar conta                       |
 | `POST`  | `/auth/login`                                    | ❌    | Login                             |
 | `GET`   | `/auth/me`                                       | ✅    | Dados do usuário autenticado      |
+| `POST`  | `/uploads/profile-photo`                         | ❌    | Gerar URL de upload de foto       |
 | `GET`   | `/institutions`                                  | ❌    | Listar instituições (com filtros) |
 | `GET`   | `/institutions/:id`                              | ❌    | Detalhes de uma instituição       |
 | `GET`   | `/institutions/:id/subjects`                     | ❌    | Matérias por ano/período          |
@@ -1422,7 +1481,7 @@ InstitutionSubject (M:N entre Institution e Subject)
 
 ```sql
 -- Enums
-CREATE TYPE user_role AS ENUM ('STUDENT', 'TEACHER', 'BOTH');
+CREATE TYPE user_role AS ENUM ('STUDENT', 'TEACHER');
 CREATE TYPE institution_type AS ENUM ('SCHOOL', 'UNIVERSITY');
 CREATE TYPE publication_status AS ENUM ('DRAFT', 'PUBLISHED', 'FINISHED');
 CREATE TYPE meeting_status AS ENUM ('LOCKED', 'RELEASED');
@@ -1456,7 +1515,6 @@ CREATE TABLE teacher_profiles (
   bio TEXT NOT NULL DEFAULT '',
   headline VARCHAR(100) NOT NULL DEFAULT '',
   institution_ids UUID[] NOT NULL DEFAULT '{}',
-  subject_ids UUID[] NOT NULL DEFAULT '{}',
   labels TEXT[] NOT NULL DEFAULT '{}',
   is_verified BOOLEAN NOT NULL DEFAULT FALSE
 );
@@ -1485,6 +1543,7 @@ CREATE TABLE institution_subjects (
   UNIQUE (institution_id, subject_id, year_label)
 );
 
+-- Fonte de verdade das materias que o professor leciona
 CREATE TABLE teacher_subjects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_profile_id UUID NOT NULL REFERENCES teacher_profiles(id),

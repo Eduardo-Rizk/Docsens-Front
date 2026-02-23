@@ -1,0 +1,226 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { ArrowRight, Play, BookOpen, Zap } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { getUserById, viewer } from "@/lib/domain";
+
+export function Hero() {
+  const searchParams = useSearchParams();
+  const previewGuest = searchParams.get("preview") === "guest";
+  const profile = previewGuest ? undefined : getUserById(viewer.userId);
+  const isLoggedIn = Boolean(profile);
+  const firstName = profile?.name.split(" ")[0] ?? "";
+
+  return (
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 sm:px-8">
+      {/* Industrial Grid Background */}
+      <div className="absolute inset-0 -z-10 grid-texture" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background/90 to-background" />
+
+      {/* Subtle accent glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-accent/5 blur-[120px] -z-10" />
+
+      <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10 max-w-[1200px]">
+
+        {/* Text Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="space-y-8 text-center lg:text-left"
+        >
+          {/* Tag */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 border border-border bg-surface text-brand-accent text-xs font-semibold uppercase tracking-[0.15em] w-fit mx-auto lg:mx-0"
+          >
+            <Zap size={12} />
+            <span>{isLoggedIn ? "Seu Hub de Estudos" : "Hub de Aprendizado"}</span>
+          </motion.div>
+
+          <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
+            <span className="block bg-gradient-to-br from-white via-sky-200 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              {isLoggedIn
+                ? `Olá, ${firstName}. Vamos para o próximo aulão?`
+                : "Aprenda com quem já passou pelo que você está vivendo."}
+            </span>
+          </h1>
+
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
+            {isLoggedIn
+              ? "Seu perfil está pronto. Explore recomendações alinhadas às suas instituições e matérias."
+              : "Conecte-se com mentores experientes para mentorias e aulões ao vivo."}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
+            <Link
+              href="/explorar"
+              className="group relative px-7 py-3.5 bg-foreground text-background font-semibold text-sm transition-all hover:bg-foreground/90 active:scale-[0.98] flex items-center justify-center gap-2 overflow-hidden"
+            >
+              <span className="relative z-10">Explorar Aulas</span>
+              <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href={isLoggedIn ? "/aluno/perfil" : "/cadastro"}
+              className="px-7 py-3.5 border border-border text-foreground font-semibold text-sm hover:bg-surface hover:border-muted-foreground/30 transition-all flex items-center justify-center active:scale-[0.98]"
+            >
+              {isLoggedIn ? "Ajustar meu perfil" : "Criar conta"}
+            </Link>
+          </div>
+
+          {/* Value props */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="flex flex-wrap gap-2 pt-4 justify-center lg:justify-start"
+          >
+            {[
+              "Ao vivo",
+              "Pague por aula",
+              "Professores verificados",
+            ].map((prop) => (
+              <span
+                key={prop}
+                className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted-foreground"
+              >
+                <span className="h-1 w-1 rounded-full bg-brand-accent" />
+                {prop}
+              </span>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* 3D Book / Video Element */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="relative h-[420px] sm:h-[500px] w-full flex items-center justify-center"
+        >
+          <motion.div
+            animate={{
+              y: [0, -12, 0],
+              rotateY: [0, 2, 0],
+              rotateX: [0, -1, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="relative"
+            style={{ perspective: "1000px" }}
+          >
+            {/* Book / Screen Container */}
+            <div className="relative w-[280px] h-[360px] sm:w-[320px] sm:h-[420px]" style={{ transformStyle: "preserve-3d" }}>
+              {/* Main face - Screen/Book */}
+              <div className="absolute inset-0 bg-surface border border-border overflow-hidden" style={{ transform: "rotateY(-8deg) rotateX(2deg)", transformStyle: "preserve-3d" }}>
+                {/* Screen content - video lesson mockup */}
+                <div className="p-4 h-full flex flex-col">
+                  {/* Top bar */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-destructive" />
+                    <div className="w-2 h-2 bg-warning" />
+                    <div className="w-2 h-2 bg-success" />
+                    <div className="flex-1" />
+                    <div className="text-[10px] text-muted-foreground font-mono">LIVE</div>
+                    <div className="w-1.5 h-1.5 bg-destructive animate-pulse" />
+                  </div>
+
+                  {/* Video area */}
+                  <div className="flex-1 bg-background border border-border-subtle flex items-center justify-center relative overflow-hidden">
+                    {/* Scan line effect */}
+                    <div className="absolute inset-0 overflow-hidden">
+                      <div className="w-full h-px bg-brand-accent/20 animate-scan" />
+                    </div>
+
+                    {/* Play button */}
+                    <motion.div
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-14 h-14 sm:w-16 sm:h-16 border border-brand-accent/40 flex items-center justify-center accent-glow"
+                    >
+                      <Play size={20} className="text-brand-accent ml-0.5" fill="currentColor" />
+                    </motion.div>
+
+                    {/* Progress bar */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-border">
+                      <motion.div
+                        animate={{ width: ["0%", "65%"] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                        className="h-full bg-brand-accent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bottom info */}
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <BookOpen size={12} className="text-brand-accent" />
+                      <span className="text-xs font-medium text-foreground">Calculo Intensivo</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-[10px] px-2 py-0.5 bg-brand-accent/10 text-brand-accent border border-brand-accent/20 font-medium">INSPER</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-surface-hover text-muted-foreground border border-border font-medium">50 vagas</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Edge glow effect */}
+                <div className="absolute inset-0 pointer-events-none border border-brand-accent/10" />
+              </div>
+
+              {/* Spine / Side edge */}
+              <div
+                className="absolute top-0 left-0 w-3 h-full bg-gradient-to-r from-surface-hover to-surface border-y border-l border-border"
+                style={{ transform: "rotateY(82deg) translateX(-1.5px)", transformOrigin: "left center" }}
+              />
+
+              {/* Reflection */}
+              <div
+                className="absolute left-0 right-0 h-[200px] bg-gradient-to-b from-brand-accent/8 to-transparent blur-sm"
+                style={{ top: "100%", transform: "scaleY(-0.4) rotateY(-8deg)", opacity: 0.3 }}
+              />
+            </div>
+
+            {/* Floating elements */}
+            <motion.div
+              animate={{ y: [-8, 8, -8], x: [-3, 3, -3] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute -top-6 -right-8 px-3 py-2 bg-surface border border-border flex items-center gap-2"
+            >
+              <div className="w-2 h-2 bg-brand-accent" />
+              <span className="text-xs font-medium text-foreground font-mono">AO VIVO</span>
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [6, -6, 6], x: [3, -3, 3] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -bottom-4 -left-10 px-3 py-2 bg-surface border border-border flex items-center gap-2"
+            >
+              <Zap size={12} className="text-brand-accent" />
+              <span className="text-xs font-medium text-foreground">R$ 149</span>
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [-5, 5, -5] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute top-1/2 -right-14 px-3 py-2 bg-surface border border-border"
+            >
+              <span className="text-xs text-muted-foreground font-mono">34/50</span>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Bottom divider */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+    </section>
+  );
+}

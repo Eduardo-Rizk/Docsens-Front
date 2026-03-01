@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, BookOpen, Users, Clock } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Clock } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
@@ -19,35 +19,24 @@ export function Hero() {
       <ContainerScroll
         titleComponent={
           <div className="space-y-6">
-            {/* Tag */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 border border-[#d1d5db] bg-white text-[#0f172a] text-xs font-semibold uppercase tracking-[0.15em] rounded-md"
-            >
-              <Zap size={12} className="text-[#ea580c]" />
-              <span>{isLoggedIn ? "Seu Hub de Estudos" : "Hub de Aprendizado"}</span>
-            </motion.div>
-
             <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] text-[#0f172a]">
               {isLoggedIn ? (
                 <>
-                  Ola, {firstName}. <br />
-                  <span className="text-[#ea580c]">Vamos para o proximo aulao?</span>
+                  Olá, {firstName}. <br />
+                  <span className="text-[#ea580c]">Vamos para o próximo aulão?</span>
                 </>
               ) : (
                 <>
-                  Aprenda com quem ja passou <br />
-                  <span className="text-[#ea580c]">pelo que voce esta vivendo.</span>
+                  Aprenda com quem já passou <br />
+                  <span className="text-[#ea580c]">pelo que você está vivendo.</span>
                 </>
               )}
             </h1>
 
             <p className="text-base md:text-lg text-[#6b7280] max-w-2xl mx-auto leading-relaxed">
               {isLoggedIn
-                ? "Seu perfil esta pronto. Explore recomendacoes alinhadas as suas instituicoes e materias."
-                : "Conecte-se com mentores experientes para mentorias e auloes ao vivo. Pague por aula, sem compromisso."}
+                ? "Seu perfil está pronto. Explore recomendações alinhadas às suas instituições e matérias."
+                : "Conecte-se com mentores experientes para mentorias e aulões ao vivo. Pague por aula, sem compromisso."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">

@@ -11,9 +11,9 @@ export function Hero() {
   const firstName = user?.name.split(" ")[0] ?? "";
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 sm:px-8">
-      {/* Background gradient */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#f8f9fa] via-[#f8f9fa]/90 to-[#f8f9fa]" />
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 sm:px-8 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]">
+      {/* Subtle radial glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#1e40af]/10 blur-[140px] -z-0 pointer-events-none" />
 
       <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10 max-w-[1200px]">
 
@@ -29,21 +29,21 @@ export function Hero() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 border border-[#d1d5db] bg-white text-[#0f172a] text-xs font-semibold uppercase tracking-[0.15em] w-fit mx-auto lg:mx-0 rounded-md"
+            className="inline-flex items-center gap-2 px-3 py-1.5 border border-white/20 bg-white/10 text-white text-xs font-semibold uppercase tracking-[0.15em] w-fit mx-auto lg:mx-0 rounded-md"
           >
-            <Zap size={12} className="text-[#0f172a]" />
+            <Zap size={12} className="text-[#ea580c]" />
             <span>{isLoggedIn ? "Seu Hub de Estudos" : "Hub de Aprendizado"}</span>
           </motion.div>
 
           <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
-            <span className="block text-[#0f172a]">
+            <span className="block text-white">
               {isLoggedIn
                 ? `Ola, ${firstName}. Vamos para o proximo aulao?`
                 : "Aprenda com quem ja passou pelo que voce esta vivendo."}
             </span>
           </h1>
 
-          <p className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
+          <p className="text-lg text-white/70 max-w-lg mx-auto lg:mx-0 leading-relaxed">
             {isLoggedIn
               ? "Seu perfil esta pronto. Explore recomendacoes alinhadas as suas instituicoes e materias."
               : "Conecte-se com mentores experientes para mentorias e auloes ao vivo."}
@@ -60,7 +60,7 @@ export function Hero() {
 
             <Link
               href={isLoggedIn ? "/aluno/perfil" : "/cadastro"}
-              className="px-7 py-3.5 border border-[#d1d5db] text-[#0f172a] font-semibold text-sm hover:bg-[#f3f4f6] transition-all flex items-center justify-center active:scale-[0.98] rounded-md"
+              className="px-7 py-3.5 border border-white/25 text-white font-semibold text-sm hover:bg-white/10 transition-all flex items-center justify-center active:scale-[0.98] rounded-md"
             >
               {isLoggedIn ? "Ajustar meu perfil" : "Criar conta"}
             </Link>
@@ -80,9 +80,9 @@ export function Hero() {
             ].map((prop) => (
               <span
                 key={prop}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[#d1d5db] bg-white px-3 py-1.5 text-xs font-medium text-[#6b7280]"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/60"
               >
-                <span className="h-1 w-1 rounded-full bg-[#0f172a]" />
+                <span className="h-1 w-1 rounded-full bg-[#ea580c]" />
                 {prop}
               </span>
             ))}
@@ -113,7 +113,7 @@ export function Hero() {
             {/* Book / Screen Container */}
             <div className="relative w-[280px] h-[360px] sm:w-[320px] sm:h-[420px]" style={{ transformStyle: "preserve-3d" }}>
               {/* Main face - Screen/Book */}
-              <div className="absolute inset-0 bg-white border border-[#d1d5db] rounded-lg shadow-md overflow-hidden" style={{ transform: "rotateY(-8deg) rotateX(2deg)", transformStyle: "preserve-3d" }}>
+              <div className="absolute inset-0 bg-white border border-[#e2e8f0] rounded-lg shadow-2xl overflow-hidden" style={{ transform: "rotateY(-8deg) rotateX(2deg)", transformStyle: "preserve-3d" }}>
                 {/* Screen content - video lesson mockup */}
                 <div className="p-4 h-full flex flex-col">
                   {/* Top bar */}
@@ -178,7 +178,7 @@ export function Hero() {
             <motion.div
               animate={{ y: [-8, 8, -8], x: [-3, 3, -3] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -top-6 -right-8 px-3 py-2 bg-white border border-[#d1d5db] rounded-md shadow-sm flex items-center gap-2"
+              className="absolute -top-6 -right-8 px-3 py-2 bg-white border border-[#e2e8f0] rounded-md shadow-lg flex items-center gap-2"
             >
               <div className="w-2 h-2 bg-[#ea580c] rounded-full" />
               <span className="text-xs font-medium text-foreground font-mono">AO VIVO</span>
@@ -187,7 +187,7 @@ export function Hero() {
             <motion.div
               animate={{ y: [6, -6, 6], x: [3, -3, 3] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute -bottom-4 -left-10 px-3 py-2 bg-white border border-[#d1d5db] rounded-md shadow-sm flex items-center gap-2"
+              className="absolute -bottom-4 -left-10 px-3 py-2 bg-white border border-[#e2e8f0] rounded-md shadow-lg flex items-center gap-2"
             >
               <Zap size={12} className="text-[#0f172a]" />
               <span className="text-xs font-medium text-foreground">R$ 149</span>
@@ -196,7 +196,7 @@ export function Hero() {
             <motion.div
               animate={{ y: [-5, 5, -5] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-              className="absolute top-1/2 -right-14 px-3 py-2 bg-white border border-[#d1d5db] rounded-md shadow-sm"
+              className="absolute top-1/2 -right-14 px-3 py-2 bg-white border border-[#e2e8f0] rounded-md shadow-lg"
             >
               <span className="text-xs text-muted-foreground font-mono">34/50</span>
             </motion.div>
@@ -204,8 +204,8 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Bottom divider */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d1d5db] to-transparent" />
+      {/* Bottom fade to page background */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8f9fa] to-transparent" />
     </section>
   );
 }

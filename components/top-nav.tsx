@@ -24,7 +24,7 @@ const studentItems = [
 ];
 
 const teacherItems = [
-  { href: "/professor/auloes", label: "Prof." },
+  { href: "/professor/auloes", label: "Área do Professor" },
 ];
 
 function isActive(pathname: string, href: string) {

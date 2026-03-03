@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Pencil, Users } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { useTeacherClassEvents, type TeacherClassEvent } from "@/lib/queries/teacher";
 import { formatLongDate, formatPrice, formatTime } from "@/lib/format";
@@ -31,62 +31,74 @@ function ClassEventRow({ classEvent, showBuyers = true }: { classEvent: TeacherC
 
   return (
     <article
-      className={`group relative flex flex-col gap-4 rounded-md border border-border border-l-[3px] ${pub.border} bg-surface p-5 transition-all hover:border-[#9ca3af] hover:shadow-md sm:flex-row sm:items-center sm:gap-6`}
+      className={`group relative rounded-md border border-border border-l-[3px] ${pub.border} bg-surface transition-all hover:border-[#9ca3af] hover:shadow-md`}
     >
-      {/* Date/time */}
-      <div className="w-28 shrink-0 space-y-0.5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
-          {formatLongDate(classEvent.startsAt).split(",")[0]}
-        </p>
-        <p className="font-display text-2xl leading-none text-foreground">
-          {formatTime(classEvent.startsAt)}
-        </p>
-        <p className="text-[11px] text-muted-foreground">
-          {formatLongDate(classEvent.startsAt).split(",").slice(1).join(",").trim()}
-        </p>
-      </div>
+      {/* Card body — clickable, goes to edit page */}
+      <Link
+        href={`/professor/auloes/${classEvent.id}`}
+        className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6"
+      >
+        {/* Date/time */}
+        <div className="w-28 shrink-0 space-y-0.5">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
+            {formatLongDate(classEvent.startsAt).split(",")[0]}
+          </p>
+          <p className="font-display text-2xl leading-none text-foreground">
+            {formatTime(classEvent.startsAt)}
+          </p>
+          <p className="text-[11px] text-muted-foreground">
+            {formatLongDate(classEvent.startsAt).split(",").slice(1).join(",").trim()}
+          </p>
+        </div>
 
-      <div className="hidden h-12 w-px bg-border sm:block" />
+        <div className="hidden h-12 w-px bg-border sm:block" />
 
-      {/* Info */}
-      <div className="min-w-0 flex-1 space-y-1">
-        <p className="font-display text-lg leading-snug text-foreground">
-          {classEvent.title}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {classEvent.institution?.shortName ?? ""} . {classEvent.subject?.name ?? ""}
-          <span className="ml-2 text-muted-foreground/50">
-            . {classEvent.durationMin} min
+        {/* Info */}
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="font-display text-lg leading-snug text-foreground">
+            {classEvent.title}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {classEvent.institution?.shortName ?? ""} . {classEvent.subject?.name ?? ""}
+            <span className="ml-2 text-muted-foreground/50">
+              . {classEvent.durationMin} min
+            </span>
+          </p>
+        </div>
+
+        {/* Meta */}
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
+          {classEvent.soldSeats !== undefined && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Users size={11} />
+              {classEvent.soldSeats}/{classEvent.capacity ?? "∞"}
+            </span>
+          )}
+          <span className="text-xs font-semibold text-foreground">
+            {formatPrice(classEvent.priceCents)}
           </span>
-        </p>
-      </div>
+          <StatusPill tone={pub.tone}>{pub.label}</StatusPill>
+        </div>
+      </Link>
 
-      {/* Meta + links */}
-      <div className="flex shrink-0 flex-wrap items-center gap-3">
-        {classEvent.soldSeats !== undefined && (
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Users size={11} />
-            {classEvent.soldSeats}/{classEvent.capacity ?? "∞"}
-          </span>
-        )}
-        <span className="text-xs font-semibold text-foreground">
-          {formatPrice(classEvent.priceCents)}
-        </span>
-        <StatusPill tone={pub.tone}>{pub.label}</StatusPill>
+      {/* Action buttons — visible bar at bottom */}
+      <div className="flex items-center gap-2 border-t border-border px-5 py-3">
+        <Link
+          href={`/professor/auloes/${classEvent.id}`}
+          className="flex items-center gap-1.5 rounded-md bg-[#ea580c] px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#c2410c]"
+        >
+          <Pencil size={11} />
+          Editar
+        </Link>
         {showBuyers && (
           <Link
             href={`/professor/auloes/${classEvent.id}/compradores`}
-            className="text-[10px] font-bold uppercase tracking-wider text-brand-accent hover:opacity-70 transition-opacity"
+            className="flex items-center gap-1.5 rounded-md border border-border px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground transition-all hover:border-[#9ca3af] hover:bg-[#f9fafb]"
           >
+            <Users size={11} />
             Compradores
           </Link>
         )}
-        <Link
-          href={`/professor/auloes/${classEvent.id}`}
-          className="text-muted-foreground/40 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-brand-accent"
-        >
-          <ArrowRight size={14} />
-        </Link>
       </div>
     </article>
   );

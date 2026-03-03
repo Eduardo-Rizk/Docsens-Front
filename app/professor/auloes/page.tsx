@@ -132,7 +132,7 @@ export default function TeacherAuloesPage() {
       <header className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
-            Meus Auloes
+            Meus Aulões
           </h1>
           <p className="text-base text-muted-foreground">
             {published.length} publicado{published.length !== 1 ? "s" : ""}
@@ -153,15 +153,15 @@ export default function TeacherAuloesPage() {
 
       {totalClasses === 0 ? (
         <div className="rounded-sm border border-border bg-surface p-12 text-center">
-          <p className="font-display text-2xl text-foreground">Nenhum aulao ainda</p>
+          <p className="font-display text-2xl text-foreground">Nenhum aulão ainda</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Crie seu primeiro aulao para comecar a receber alunos.
+            Crie seu primeiro aulão para começar a receber alunos.
           </p>
           <Link
             href="/professor/novo-aulao"
             className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#ea580c] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#c2410c] transition-all"
           >
-            Criar aulao
+            Criar aulão
           </Link>
         </div>
       ) : (

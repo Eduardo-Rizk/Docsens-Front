@@ -32,14 +32,14 @@ export default function CompradoresPage({ params }: PageProps) {
   }
 
   if (!data) {
-    return <div className="p-8 text-muted-foreground">Dados nao encontrados.</div>;
+    return <div className="p-8 text-muted-foreground">Dados não encontrados.</div>;
   }
 
   const { classEvent, institution, subject, paidCount, buyers } = data;
 
   return (
     <div className="space-y-8">
-      <BackLink href="/professor/auloes" label="Meus Auloes" />
+      <BackLink href="/professor/auloes" label="Meus Aulões" />
 
       {/* Class info header */}
       <div className="space-y-2">
@@ -78,7 +78,7 @@ export default function CompradoresPage({ params }: PageProps) {
             Nenhum comprador ainda
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Os alunos aparecerao aqui apos realizar a compra.
+            Os alunos aparecerão aqui após realizar a compra.
           </p>
         </div>
       ) : (

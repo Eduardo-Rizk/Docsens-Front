@@ -28,7 +28,7 @@ export default function ProfessorLayout({
   }
 
   if (!user) {
-    return <div className="p-8 text-muted-foreground">Nao autenticado.</div>;
+    return <div className="p-8 text-muted-foreground">Não autenticado.</div>;
   }
 
   const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
@@ -45,7 +45,7 @@ export default function ProfessorLayout({
         />
         <div className="min-w-0">
           <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-            Area do Professor
+            Área do Professor
           </p>
           <p className="font-display text-xl text-foreground">{user.name}</p>
         </div>

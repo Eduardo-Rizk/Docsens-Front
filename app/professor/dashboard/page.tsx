@@ -35,7 +35,7 @@ export default function TeacherDashboardPage() {
   }
 
   if (!dashboard) {
-    return <div className="p-8 text-muted-foreground">Dashboard nao disponivel.</div>;
+    return <div className="p-8 text-muted-foreground">Dashboard não disponível.</div>;
   }
 
   return (
@@ -46,7 +46,7 @@ export default function TeacherDashboardPage() {
           Dashboard
         </h1>
         <p className="text-base text-muted-foreground">
-          Visao geral da sua atividade como professor
+          Visão geral da sua atividade como professor
         </p>
       </header>
 
@@ -78,7 +78,7 @@ export default function TeacherDashboardPage() {
             {dashboard.totalPaidStudents}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            matriculas pagas no total
+            matrículas pagas no total
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function TeacherDashboardPage() {
           <div className="flex items-center gap-2">
             <BookOpen size={14} className="text-brand-accent" />
             <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-              Auloes criados
+              Aulões criados
             </p>
           </div>
           <p className="mt-3 font-display text-4xl text-foreground">
@@ -117,7 +117,7 @@ export default function TeacherDashboardPage() {
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-            Auloes . Desempenho
+            Aulões . Desempenho
           </p>
           <div className="h-px flex-1 bg-border/60" />
         </div>

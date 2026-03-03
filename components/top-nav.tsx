@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 
 const publicItems = [
-  { href: "/", label: "Inicio" },
+  { href: "/", label: "Início" },
   { href: "/explorar", label: "Explorar" },
 ];
 

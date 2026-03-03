@@ -24,6 +24,23 @@ export default function TeacherPerfilPage() {
   const [institutionIds, setInstitutionIds] = useState<string[]>([]);
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState<string | undefined>();
+  const [initialized, setInitialized] = useState(false);
+
+  // Pre-populate form with existing teacher profile data
+  useEffect(() => {
+    if (user?.teacherProfile && !initialized) {
+      const tp = user.teacherProfile;
+      if (tp.bio) setBio(tp.bio);
+      if (tp.photoUrl) setPhotoUrl(tp.photoUrl);
+      if (tp.institutions?.length) {
+        setInstitutionIds(tp.institutions.map((i) => i.institutionId));
+      }
+      if (tp.subjects?.length) {
+        setSubjectIds(tp.subjects.map((s) => s.subjectId));
+      }
+      setInitialized(true);
+    }
+  }, [user, initialized]);
 
   const initials = user?.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() ?? "??";
 
@@ -88,7 +105,7 @@ export default function TeacherPerfilPage() {
   }
 
   if (!user) {
-    return <div className="p-8 text-muted-foreground">Perfil nao encontrado.</div>;
+    return <div className="p-8 text-muted-foreground">Perfil não encontrado.</div>;
   }
 
   return (
@@ -98,7 +115,7 @@ export default function TeacherPerfilPage() {
           Perfil
         </h1>
         <p className="text-base text-muted-foreground">
-          Informacoes exibidas para alunos nas paginas de aula
+          Informações exibidas para alunos nas páginas de aula
         </p>
       </header>
 
@@ -108,12 +125,12 @@ export default function TeacherPerfilPage() {
           {/* Nome (read-only) */}
           <div className="space-y-2">
             <label className="block text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-              Nome de exibicao
+              Nome de exibição
             </label>
             <div className="flex items-center gap-3 rounded-sm border border-border/50 bg-surface/40 px-4 py-3">
               <p className="text-sm text-foreground">{user.name}</p>
               <span className="ml-auto text-[10px] text-muted-foreground/50">
-                nao editavel
+                não editável
               </span>
             </div>
           </div>
@@ -143,7 +160,7 @@ export default function TeacherPerfilPage() {
           {/* Instituicoes */}
           <div className="space-y-2">
             <label className="block text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-              Instituicoes em que leciona
+              Instituições em que leciona
             </label>
             <div className="flex flex-wrap gap-2">
               {(institutions ?? []).map((institution) => {
@@ -171,7 +188,7 @@ export default function TeacherPerfilPage() {
           {/* Materias */}
           <div className="space-y-2">
             <label className="block text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-              Materias
+              Matérias
             </label>
             <div className="flex flex-wrap gap-2">
               {(subjects ?? []).map((subject) => {
@@ -208,7 +225,7 @@ export default function TeacherPerfilPage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="w-full resize-none rounded-sm border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/50 focus:border-brand-accent/40 focus:outline-none focus:ring-1 focus:ring-brand-accent/20"
-              placeholder="Descreva sua formacao e experiencia..."
+              placeholder="Descreva sua formação e experiência..."
             />
           </div>
 
@@ -225,7 +242,7 @@ export default function TeacherPerfilPage() {
             ) : updateProfile.isPending ? (
               "Salvando..."
             ) : (
-              "Salvar alteracoes"
+              "Salvar alterações"
             )}
           </button>
         </form>
@@ -233,7 +250,7 @@ export default function TeacherPerfilPage() {
         {/* Live preview */}
         <div className="space-y-3">
           <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
-            Pre-visualizacao
+            Pré-visualização
           </p>
           <div className="flex items-start gap-5 rounded-sm border border-border bg-surface p-5">
             <TeacherAvatar
@@ -248,7 +265,7 @@ export default function TeacherPerfilPage() {
               </p>
               <p className="font-display text-xl text-foreground">{user.name}</p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {bio || "Sua bio aparecera aqui."}
+                {bio || "Sua bio aparecerá aqui."}
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {selectedInstitutionNames.map((institutionName) => (
@@ -271,7 +288,7 @@ export default function TeacherPerfilPage() {
             </div>
           </div>
           <p className="text-[10px] text-muted-foreground/40">
-            Assim os alunos veem seu card nas paginas de aulao
+            Assim os alunos veem seu card nas páginas de aulão
           </p>
         </div>
       </div>

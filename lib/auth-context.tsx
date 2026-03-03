@@ -11,7 +11,13 @@ export interface AuthUser {
   email: string
   role: 'STUDENT' | 'TEACHER'
   studentProfile?: { id: string } | null
-  teacherProfile?: { id: string } | null
+  teacherProfile?: {
+    id: string
+    bio?: string
+    photoUrl?: string | null
+    institutions?: { id: string; institutionId: string }[]
+    subjects?: { id: string; subjectId: string }[]
+  } | null
 }
 
 interface AuthContextType {

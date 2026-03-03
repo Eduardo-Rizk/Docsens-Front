@@ -145,7 +145,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setRole("STUDENT")}
+                onClick={() => { setRole("STUDENT"); setInstitutionIds(prev => prev.slice(0, 1)); }}
                 className={`border px-2 py-3 text-[11px] font-bold uppercase tracking-[0.09em] whitespace-nowrap transition-colors sm:text-xs ${
                   role === "STUDENT"
                     ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
@@ -172,8 +172,8 @@ export default function RegisterPage() {
         <div>
           <label className={label}>
             {role === "TEACHER"
-              ? "Instituicoes onde deseja lecionar"
-              : "Instituicoes onde estuda"}
+              ? "Instituições onde deseja lecionar"
+              : "Instituição onde estuda"}
           </label>
           <div className="flex flex-wrap gap-2">
             {(institutions ?? []).map((institution) => {
@@ -183,7 +183,9 @@ export default function RegisterPage() {
                   key={institution.id}
                   type="button"
                   onClick={() =>
-                    setInstitutionIds((prev) => toggleId(prev, institution.id))
+                    role === "STUDENT"
+                      ? setInstitutionIds(active ? [] : [institution.id])
+                      : setInstitutionIds((prev) => toggleId(prev, institution.id))
                   }
                   className={`border px-3 py-2 text-[11px] font-semibold transition-colors ${
                     active
@@ -197,7 +199,9 @@ export default function RegisterPage() {
             })}
           </div>
           <p className="mt-2 text-[10px] text-muted-foreground/55">
-            Voce pode editar depois no perfil.
+            {role === "TEACHER"
+              ? "Você pode editar depois no perfil."
+              : "Selecione sua instituição. Você pode alterar depois no perfil."}
           </p>
         </div>
 

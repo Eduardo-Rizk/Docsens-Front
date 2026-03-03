@@ -138,9 +138,9 @@ function ClassRow({
           {ce.title}
         </p>
         <p className="text-xs text-muted-foreground">
-          {ce.institution?.shortName}
-          {ce.teacherProfile?.user?.name && (
-            <> . <span className="text-muted-foreground/70">{ce.teacherProfile.user.name}</span></>
+          {item.institution?.shortName}
+          {item.teacher?.userName && (
+            <> . <span className="text-muted-foreground/70">{item.teacher.userName}</span></>
           )}
           <span className="ml-2 text-muted-foreground/50">. {ce.durationMin} min</span>
         </p>

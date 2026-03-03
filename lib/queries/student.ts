@@ -6,6 +6,7 @@ export interface AgendaItem {
   classEvent: {
     id: string
     title: string
+    description: string
     startsAt: string
     durationMin: number
     priceCents: number
@@ -14,11 +15,11 @@ export interface AgendaItem {
     publicationStatus: string
     meetingStatus: string
     meetingUrl?: string
-    institution: { id: string; shortName: string }
-    subject: { id: string; name: string }
-    teacherProfile: { id: string; user: { name: string } }
   }
-  enrollment?: { id: string; status: string }
+  institution: { id: string; shortName: string }
+  subject: { id: string; name: string }
+  teacher: { userName: string; headline: string }
+  enrollment: { id: string; status: string; createdAt: string } | null
   accessState:
     | 'NEEDS_PURCHASE'
     | 'PENDING_PAYMENT'

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
-import { useTeacherClassEvents } from "@/lib/queries/teacher";
+import { useTeacherClassEvents, type TeacherClassEvent } from "@/lib/queries/teacher";
 import { formatLongDate, formatPrice, formatTime } from "@/lib/format";
 
 const publicationConfig: Record<string, { label: string; tone: "muted" | "default" | "success" }> = {
@@ -26,8 +26,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ClassEventRow({ classEvent, showBuyers = true }: { classEvent: any; showBuyers?: boolean }) {
+function ClassEventRow({ classEvent, showBuyers = true }: { classEvent: TeacherClassEvent; showBuyers?: boolean }) {
   const pub = publicationConfig[classEvent.publicationStatus] ?? publicationConfig.DRAFT;
 
   return (
@@ -110,9 +109,9 @@ export default function TeacherAuloesPage() {
     );
   }
 
-  const published = (data?.published ?? []) as Array<Record<string, unknown>>;
-  const drafts = (data?.drafts ?? []) as Array<Record<string, unknown>>;
-  const finished = (data?.finished ?? []) as Array<Record<string, unknown>>;
+  const published = data?.published ?? [];
+  const drafts = data?.drafts ?? [];
+  const finished = data?.finished ?? [];
   const totalClasses = published.length + drafts.length + finished.length;
 
   return (
@@ -160,7 +159,7 @@ export default function TeacherAuloesPage() {
               <SectionHeader label="Publicados" count={published.length} />
               <div className="flex flex-col gap-2">
                 {published.map((classEvent) => (
-                  <ClassEventRow key={classEvent.id as string} classEvent={classEvent} />
+                  <ClassEventRow key={classEvent.id} classEvent={classEvent} />
                 ))}
               </div>
             </section>
@@ -171,7 +170,7 @@ export default function TeacherAuloesPage() {
               <SectionHeader label="Rascunhos" count={drafts.length} />
               <div className="flex flex-col gap-2">
                 {drafts.map((classEvent) => (
-                  <ClassEventRow key={classEvent.id as string} classEvent={classEvent} showBuyers={false} />
+                  <ClassEventRow key={classEvent.id} classEvent={classEvent} showBuyers={false} />
                 ))}
               </div>
             </section>
@@ -182,7 +181,7 @@ export default function TeacherAuloesPage() {
               <SectionHeader label="Finalizados" count={finished.length} />
               <div className="flex flex-col gap-2">
                 {finished.map((classEvent) => (
-                  <ClassEventRow key={classEvent.id as string} classEvent={classEvent} />
+                  <ClassEventRow key={classEvent.id} classEvent={classEvent} />
                 ))}
               </div>
             </section>

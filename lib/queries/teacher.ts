@@ -30,14 +30,31 @@ export function useTeacherDashboard() {
   })
 }
 
+export interface TeacherClassEvent {
+  id: string
+  title: string
+  description: string
+  startsAt: string
+  durationMin: number
+  priceCents: number
+  capacity: number
+  soldSeats: number
+  publicationStatus: string
+  meetingStatus: string
+  meetingUrl?: string
+  createdAt: string
+  institution: { id: string; shortName: string }
+  subject: { id: string; name: string }
+}
+
 export function useTeacherClassEvents() {
   return useQuery({
     queryKey: ['teacher', 'class-events'],
     queryFn: () =>
       apiFetch<{
-        drafts: Array<Record<string, unknown>>
-        published: Array<Record<string, unknown>>
-        finished: Array<Record<string, unknown>>
+        drafts: TeacherClassEvent[]
+        published: TeacherClassEvent[]
+        finished: TeacherClassEvent[]
       }>('/teacher/class-events'),
   })
 }

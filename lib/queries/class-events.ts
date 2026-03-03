@@ -16,12 +16,10 @@ export interface ClassEventData {
   publicationStatus: string
   meetingStatus: string
   createdAt: string
-  isSoldOut: boolean
-  spotsLeft: number
 }
 
 export interface ClassEventDetail {
-  classEvent: ClassEventData
+  classEvent: ClassEventData & { isSoldOut: boolean; spotsLeft: number }
   institution: { id: string; name: string; shortName: string }
   subject: { id: string; name: string; icon: string | null }
   teacher: {

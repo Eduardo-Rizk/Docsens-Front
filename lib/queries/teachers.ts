@@ -1,39 +1,46 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../api'
 
-interface ClassEvent {
+export interface TeacherDetailEvent {
   id: string
   title: string
+  description: string
+  teacherProfileId: string
+  subjectId: string
+  institutionId: string
   startsAt: string
   durationMin: number
   priceCents: number
   capacity: number
   soldSeats: number
   publicationStatus: string
+  meetingStatus: string
+  createdAt: string
 }
 
 export interface TeacherDetail {
-  teacherProfile: {
+  teacher: {
     id: string
-    bio: string
-    photoUrl: string | null
+    photo: string
     headline: string
-    user: { name: string }
+    bio: string
+    isVerified: boolean
+    userName: string
   }
-  institutions: { id: string; shortName: string }[]
-  subjects: { id: string; name: string }[]
+  institution: {
+    id: string
+    name: string
+    shortName: string
+  }
   stats: {
     totalClasses: number
-    openClasses: number
     totalSubjects: number
+    openSpots: number
   }
-  classesBySubject: Record<
-    string,
-    {
-      subject: { id: string; name: string }
-      classEvents: ClassEvent[]
-    }
-  >
+  classesBySubject: Array<{
+    subject: { id: string; name: string; icon: string | null }
+    events: TeacherDetailEvent[]
+  }>
 }
 
 export function useTeacherDetail(

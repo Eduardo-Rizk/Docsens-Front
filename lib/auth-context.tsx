@@ -39,7 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { data: user = null, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
-    queryFn: () => apiFetch<AuthUser>('/auth/me'),
+    queryFn: async () => {
+      try {
+        return await apiFetch<AuthUser>('/auth/me')
+      } catch (err) {
+        // If token is invalid/expired, clear the orphaned cookie
+        // so the user isn't trapped (middleware blocks /login when cookie exists)
+        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+        }
+        throw err
+      }
+    },
     retry: false,
     staleTime: 5 * 60 * 1000,
   })

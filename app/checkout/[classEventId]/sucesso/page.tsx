@@ -12,7 +12,7 @@ type PageProps = {
 
 export default function CheckoutSuccessPage({ params }: PageProps) {
   const { classEventId } = use(params);
-  const { data: classEvent, isLoading } = useClassEvent(classEventId);
+  const { data: detail, isLoading } = useClassEvent(classEventId);
 
   if (isLoading) {
     return (
@@ -29,11 +29,15 @@ export default function CheckoutSuccessPage({ params }: PageProps) {
     );
   }
 
-  if (!classEvent) {
+  if (!detail) {
     return <div className="p-8 text-zinc-400">Aula nao encontrada.</div>;
   }
 
-  const teacherName = classEvent.teacherProfile?.user?.name ?? "";
+  const classEvent = detail.classEvent;
+  const institution = detail.institution;
+  const subject = detail.subject;
+  const teacher = detail.teacher;
+  const teacherName = teacher.userName;
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center py-16">
@@ -62,7 +66,7 @@ export default function CheckoutSuccessPage({ params }: PageProps) {
         <div className="rounded-sm border border-emerald-500/20 bg-emerald-500/[0.04] p-6 space-y-4">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-400/70">
-              {classEvent.institution?.shortName} . {classEvent.subject?.name}
+              {institution.shortName} . {subject.name}
             </p>
             <p className="font-display text-xl leading-snug text-foreground">
               {classEvent.title}

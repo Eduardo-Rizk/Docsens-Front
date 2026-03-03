@@ -17,7 +17,7 @@ type PageProps = {
 
 export default function CheckoutPage({ params }: PageProps) {
   const { classEventId } = use(params);
-  const { data: classEvent, isLoading } = useClassEvent(classEventId);
+  const { data: detail, isLoading } = useClassEvent(classEventId);
   const createEnrollment = useCreateEnrollment();
   const confirmPayment = useConfirmPayment();
   const router = useRouter();
@@ -39,14 +39,19 @@ export default function CheckoutPage({ params }: PageProps) {
     );
   }
 
-  if (!classEvent) {
+  if (!detail) {
     return <div className="p-8 text-zinc-400">Aula nao encontrada.</div>;
   }
 
-  const teacher = classEvent.teacherProfile;
-  const teacherName = teacher?.user?.name ?? "";
-  const teacherInitials = teacherName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const classEvent = detail.classEvent;
+  const institution = detail.institution;
+  const subject = detail.subject;
+  const teacher = detail.teacher;
+
+  const teacherName = teacher.userName;
+  const teacherInitials = teacher.photo || teacherName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
   const price = formatPrice(classEvent.priceCents);
+  const spotsLeft = classEvent.spotsLeft;
 
   async function handlePay() {
     setProcessing(true);
@@ -85,8 +90,8 @@ export default function CheckoutPage({ params }: PageProps) {
 
           {/* Badges */}
           <div className="flex flex-wrap gap-2">
-            <StatusPill tone="default">{classEvent.institution?.shortName}</StatusPill>
-            <StatusPill tone="muted">{classEvent.subject?.name}</StatusPill>
+            <StatusPill tone="default">{institution.shortName}</StatusPill>
+            <StatusPill tone="muted">{subject.name}</StatusPill>
           </div>
 
           {/* Class details card */}
@@ -111,22 +116,18 @@ export default function CheckoutPage({ params }: PageProps) {
             </div>
 
             {/* Teacher */}
-            {teacher && (
-              <>
-                <div className="h-px bg-border" />
-                <div className="flex items-center gap-3">
-                  <TeacherAvatar
-                    initials={teacherInitials}
-                    photoUrl={teacher.photoUrl ?? undefined}
-                    alt={teacherName}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-xs font-bold text-cyan-300"
-                  />
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{teacherName}</p>
-                  </div>
-                </div>
-              </>
-            )}
+            <div className="h-px bg-border" />
+            <div className="flex items-center gap-3">
+              <TeacherAvatar
+                initials={teacherInitials}
+                photoUrl={undefined}
+                alt={teacherName}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-xs font-bold text-cyan-300"
+              />
+              <div>
+                <p className="text-sm font-semibold text-foreground">{teacherName}</p>
+              </div>
+            </div>
           </div>
 
           {/* Description */}
@@ -173,7 +174,7 @@ export default function CheckoutPage({ params }: PageProps) {
 
           {/* Spots left */}
           <p className="text-center text-[11px] text-muted-foreground/50">
-            {classEvent.capacity - classEvent.soldSeats} vaga{classEvent.capacity - classEvent.soldSeats !== 1 ? "s" : ""} restante{classEvent.capacity - classEvent.soldSeats !== 1 ? "s" : ""}
+            {spotsLeft} vaga{spotsLeft !== 1 ? "s" : ""} restante{spotsLeft !== 1 ? "s" : ""}
           </p>
         </aside>
       </div>

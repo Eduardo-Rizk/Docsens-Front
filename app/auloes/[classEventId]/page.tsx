@@ -19,7 +19,7 @@ export default function ClassEventPage({ params }: PageProps) {
   const { classEventId } = use(params);
   const searchParams = useSearchParams();
   const fromAgenda = searchParams.get("from") === "agenda";
-  const { data: classEvent, isLoading } = useClassEvent(classEventId);
+  const { data: detail, isLoading } = useClassEvent(classEventId);
   const { user } = useAuth();
 
   if (isLoading) {
@@ -42,28 +42,32 @@ export default function ClassEventPage({ params }: PageProps) {
     );
   }
 
-  if (!classEvent) {
+  if (!detail) {
     return <div className="p-8 text-zinc-400">Aula nao encontrada.</div>;
   }
 
-  const soldOut = classEvent.soldSeats >= classEvent.capacity;
-  const spotsLeft = classEvent.capacity - classEvent.soldSeats;
-  const teacher = classEvent.teacherProfile;
-  const teacherName = teacher?.user?.name ?? "";
-  const teacherInitials = teacherName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const classEvent = detail.classEvent;
+  const institution = detail.institution;
+  const subject = detail.subject;
+  const teacher = detail.teacher;
+
+  const soldOut = classEvent.isSoldOut;
+  const spotsLeft = classEvent.spotsLeft;
+  const teacherName = teacher.userName;
+  const teacherInitials = teacher.photo || teacherName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="space-y-10">
       {/* Breadcrumb + pills */}
       <div className="space-y-4">
         <BackLink
-          href={fromAgenda ? "/aluno/meus-auloes" : `/instituicoes/${classEvent.institution.id}/materias/${classEvent.subject.id}`}
-          label={fromAgenda ? "Minha Agenda" : (classEvent.subject?.name ?? "Materia")}
+          href={fromAgenda ? "/aluno/meus-auloes" : `/instituicoes/${institution.id}/materias/${subject.id}`}
+          label={fromAgenda ? "Minha Agenda" : subject.name}
         />
 
         <div className="flex flex-wrap items-center gap-2">
-          <StatusPill tone="default">{classEvent.institution?.shortName}</StatusPill>
-          <StatusPill tone="muted">{classEvent.subject?.name}</StatusPill>
+          <StatusPill tone="default">{institution.shortName}</StatusPill>
+          <StatusPill tone="muted">{subject.name}</StatusPill>
           {soldOut ? (
             <StatusPill tone="warn">Esgotado</StatusPill>
           ) : (
@@ -89,24 +93,22 @@ export default function ClassEventPage({ params }: PageProps) {
           </div>
 
           {/* Teacher card */}
-          {teacher && (
-            <div className="flex items-start gap-5 rounded-sm border border-border bg-surface p-5">
-              <TeacherAvatar
-                initials={teacherInitials}
-                photoUrl={teacher.photoUrl ?? undefined}
-                alt={teacherName}
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-sm font-bold text-cyan-300"
-              />
-              <div className="min-w-0">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
-                  Professor
-                </p>
-                <p className="font-display text-xl text-foreground">
-                  {teacherName}
-                </p>
-              </div>
+          <div className="flex items-start gap-5 rounded-sm border border-border bg-surface p-5">
+            <TeacherAvatar
+              initials={teacherInitials}
+              photoUrl={undefined}
+              alt={teacherName}
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-sm font-bold text-cyan-300"
+            />
+            <div className="min-w-0">
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
+                Professor
+              </p>
+              <p className="font-display text-xl text-foreground">
+                {teacherName}
+              </p>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Right: purchase sidebar */}

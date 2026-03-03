@@ -5,7 +5,6 @@ import Link from "next/link";
 import { SubjectIcon } from "@/components/SubjectIcon";
 import { BackLink } from "@/components/BackLink";
 import { useInstitution, useSubjectTeachers } from "@/lib/queries/institutions";
-import { useClassEvents } from "@/lib/queries/class-events";
 import { TeacherGrid, type TeacherCardData } from "@/components/TeacherGrid";
 
 type PageProps = {
@@ -26,10 +25,9 @@ const AVATAR_PALETTE: Array<{
 export default function SubjectPage({ params }: PageProps) {
   const { institutionId, subjectId } = use(params);
   const { data: institution, isLoading: loadingInst } = useInstitution(institutionId);
-  const { data: teachers, isLoading: loadingTeachers } = useSubjectTeachers(institutionId, subjectId);
-  const { data: allEvents, isLoading: loadingEvents } = useClassEvents({ institutionId, subjectId });
+  const { data: teachersResponse, isLoading: loadingTeachers } = useSubjectTeachers(institutionId, subjectId);
 
-  const isLoading = loadingInst || loadingTeachers || loadingEvents;
+  const isLoading = loadingInst || loadingTeachers;
 
   if (isLoading) {
     return (
@@ -53,37 +51,33 @@ export default function SubjectPage({ params }: PageProps) {
     return <div className="p-8 text-zinc-400">Instituicao nao encontrada.</div>;
   }
 
-  const teacherList = teachers ?? [];
-  const eventList = allEvents ?? [];
+  const teacherList = teachersResponse?.teachers ?? [];
+  const subjectName = teachersResponse?.subject?.name ?? subjectId;
+  const totalClasses = teachersResponse?.totalClasses ?? 0;
 
-  // Derive the subject name from the first teacher's context or from events
-  const subjectName = teacherList.length > 0
-    ? (eventList.find(e => e.subject)?.subject.name ?? subjectId)
-    : subjectId;
-
-  // Build serializable card data for the client component
+  // Build card data matching the backend's flat DTO
   const teacherCards: TeacherCardData[] = teacherList.map((teacher, index) => {
     const palette = AVATAR_PALETTE[index % AVATAR_PALETTE.length];
-    const teacherEvents = eventList.filter((e) => e.teacherProfile.id === teacher.teacherProfile.id);
-    const openCount = teacherEvents.filter((e) => e.soldSeats < e.capacity).length;
+    const openCount = teacher.events.filter((e) => e.soldSeats < e.capacity).length;
 
-    const nextEvent = teacher.nextEvent
-      ? eventList.find(e => e.id === teacher.nextEvent?.id)
+    // Use full event data from events[] for nextEvent (has description etc.)
+    const nextEventFull = teacher.nextEvent
+      ? teacher.events.find((e) => e.id === teacher.nextEvent!.id)
       : undefined;
 
     return {
-      id: teacher.teacherProfile.id,
-      photo: teacher.teacherProfile.photoUrl ? "" : (teacher.user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()),
-      photoUrl: teacher.teacherProfile.photoUrl ?? undefined,
-      headline: teacher.teacherProfile.headline,
-      bio: teacher.teacherProfile.bio,
-      isVerified: false,
-      userName: teacher.user.name,
+      id: teacher.id,
+      photo: teacher.photo,
+      photoUrl: undefined,
+      headline: teacher.headline,
+      bio: teacher.bio,
+      isVerified: teacher.isVerified,
+      userName: teacher.userName,
       avatarColor: palette.cls,
       avatarTextColor: "",
       accentHex: palette.hex,
-      nextEvent: nextEvent as TeacherCardData["nextEvent"],
-      events: teacherEvents as TeacherCardData["events"],
+      nextEvent: nextEventFull,
+      events: teacher.events,
       openCount,
     };
   });
@@ -103,7 +97,7 @@ export default function SubjectPage({ params }: PageProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <SubjectIcon name={undefined} size={36} className="text-brand-accent" />
+            <SubjectIcon name={teachersResponse?.subject?.icon ?? undefined} size={36} className="text-brand-accent" />
             <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
               {subjectName}
             </h1>
@@ -111,7 +105,7 @@ export default function SubjectPage({ params }: PageProps) {
 
           <p className="text-base text-muted-foreground">
             {teacherList.length > 0
-              ? `${teacherList.length} professor${teacherList.length !== 1 ? "es" : ""} disponive${teacherList.length !== 1 ? "is" : "l"} · ${eventList.length} aula${eventList.length !== 1 ? "s" : ""} publicada${eventList.length !== 1 ? "s" : ""}`
+              ? `${teacherList.length} professor${teacherList.length !== 1 ? "es" : ""} disponive${teacherList.length !== 1 ? "is" : "l"} · ${totalClasses} aula${totalClasses !== 1 ? "s" : ""} publicada${totalClasses !== 1 ? "s" : ""}`
               : "Nenhum professor disponivel no momento."}
           </p>
         </div>

@@ -58,16 +58,13 @@ export default function TeacherProfilePage({ params }: PageProps) {
     return <div className="p-8 text-zinc-400">Professor nao encontrado.</div>;
   }
 
-  const teacher = detail.teacherProfile;
-  const teacherName = teacher.user.name;
+  const teacher = detail.teacher;
+  const teacherName = teacher.userName;
   const palette = AVATAR_PALETTE[hashIndex(teacher.id, AVATAR_PALETTE.length)];
-  const initials = teacherName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  const initials = teacher.photo || teacherName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
-  const profileSubjects = detail.subjects.map(s => s.name);
-
-  // Flatten all class events from classesBySubject
-  const allClasses = Object.values(detail.classesBySubject).flatMap(s => s.classEvents);
-  const totalOpen = allClasses.filter(e => e.soldSeats < e.capacity).length;
+  const allClasses = detail.classesBySubject.flatMap(g => g.events);
+  const subjectNames = detail.classesBySubject.map(g => g.subject.name);
 
   return (
     <div className="space-y-12">
@@ -78,7 +75,7 @@ export default function TeacherProfilePage({ params }: PageProps) {
       <header className="flex flex-col gap-6 sm:flex-row sm:items-start">
         <TeacherAvatar
           initials={initials}
-          photoUrl={teacher.photoUrl ?? undefined}
+          photoUrl={undefined}
           alt={teacherName}
           className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-sm border text-xl font-bold ${palette.cls}`}
         />
@@ -88,6 +85,9 @@ export default function TeacherProfilePage({ params }: PageProps) {
             <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
               {teacherName}
             </h1>
+            {teacher.isVerified && (
+              <BadgeCheck size={20} className="shrink-0 text-[#0f172a]" />
+            )}
           </div>
 
           <p className="text-base font-medium" style={{ color: palette.hex }}>
@@ -99,22 +99,22 @@ export default function TeacherProfilePage({ params }: PageProps) {
           </p>
 
           <div className="flex flex-wrap gap-1.5">
-            {profileSubjects.map((subjectName) => (
+            {subjectNames.map((name) => (
               <span
-                key={subjectName}
+                key={name}
                 className="border border-border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground/70"
               >
-                {subjectName}
+                {name}
               </span>
             ))}
           </div>
 
           <p className="text-xs text-muted-foreground">
-            {allClasses.length} aula{allClasses.length !== 1 ? "s" : ""} publicada{allClasses.length !== 1 ? "s" : ""}
+            {detail.stats.totalClasses} aula{detail.stats.totalClasses !== 1 ? "s" : ""} publicada{detail.stats.totalClasses !== 1 ? "s" : ""}
             {" . "}
-            {Object.keys(detail.classesBySubject).length} materia{Object.keys(detail.classesBySubject).length !== 1 ? "s" : ""}
-            {totalOpen > 0 && (
-              <span className="ml-2 text-emerald-400">. {totalOpen} com vaga</span>
+            {detail.stats.totalSubjects} materia{detail.stats.totalSubjects !== 1 ? "s" : ""}
+            {detail.stats.openSpots > 0 && (
+              <span className="ml-2 text-emerald-400">. {detail.stats.openSpots} com vaga</span>
             )}
           </p>
         </div>
@@ -129,16 +129,16 @@ export default function TeacherProfilePage({ params }: PageProps) {
         </div>
       ) : (
         <div className="space-y-10">
-          {Object.entries(detail.classesBySubject).map(([, group]) => {
+          {detail.classesBySubject.map((group) => {
             const subject = group.subject;
-            const events = group.classEvents;
+            const events = group.events;
 
             return (
               <section key={subject.id} className="space-y-4">
                 {/* Subject header */}
                 <div className="flex items-center gap-3">
                   <SubjectIcon
-                    name={undefined}
+                    name={subject.icon ?? undefined}
                     size={18}
                     className="text-brand-accent shrink-0"
                   />

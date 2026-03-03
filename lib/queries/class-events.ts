@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../api'
 
-export interface ClassEvent {
+export interface ClassEventData {
   id: string
   title: string
   description: string
+  teacherProfileId: string
+  subjectId: string
+  institutionId: string
   startsAt: string
   durationMin: number
   priceCents: number
@@ -12,12 +15,22 @@ export interface ClassEvent {
   soldSeats: number
   publicationStatus: string
   meetingStatus: string
-  institution: { id: string; shortName: string }
-  subject: { id: string; name: string }
-  teacherProfile: {
+  createdAt: string
+  isSoldOut: boolean
+  spotsLeft: number
+}
+
+export interface ClassEventDetail {
+  classEvent: ClassEventData
+  institution: { id: string; name: string; shortName: string }
+  subject: { id: string; name: string; icon: string | null }
+  teacher: {
     id: string
-    user: { name: string }
-    photoUrl: string | null
+    photo: string
+    headline: string
+    bio: string
+    isVerified: boolean
+    userName: string
   }
 }
 
@@ -42,14 +55,14 @@ export function useClassEvents(params?: {
   return useQuery({
     queryKey: ['class-events', params],
     queryFn: () =>
-      apiFetch<ClassEvent[]>(`/class-events${qs ? `?${qs}` : ''}`),
+      apiFetch<ClassEventData[]>(`/class-events${qs ? `?${qs}` : ''}`),
   })
 }
 
 export function useClassEvent(id: string) {
   return useQuery({
     queryKey: ['class-events', id],
-    queryFn: () => apiFetch<ClassEvent>(`/class-events/${id}`),
+    queryFn: () => apiFetch<ClassEventDetail>(`/class-events/${id}`),
     enabled: !!id,
   })
 }

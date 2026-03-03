@@ -59,16 +59,49 @@ export function useInstitutionSubjects(institutionId: string) {
   })
 }
 
+export interface SubjectTeacherEvent {
+  id: string
+  title: string
+  description: string
+  teacherProfileId: string
+  subjectId: string
+  institutionId: string
+  startsAt: string
+  durationMin: number
+  priceCents: number
+  capacity: number
+  soldSeats: number
+  publicationStatus: string
+  meetingStatus: string
+  createdAt: string
+}
+
 export interface SubjectTeacher {
-  teacherProfile: {
-    id: string
-    bio: string
-    photoUrl: string | null
-    headline: string
-  }
-  user: { name: string }
+  id: string
+  photo: string
+  headline: string
+  bio: string
+  isVerified: boolean
+  userName: string
   openClassCount: number
-  nextEvent: { id: string; startsAt: string; title: string } | null
+  nextEvent: {
+    id: string
+    title: string
+    startsAt: string
+    durationMin: number
+    priceCents: number
+    capacity: number
+    soldSeats: number
+  } | null
+  events: SubjectTeacherEvent[]
+}
+
+interface SubjectTeachersResponse {
+  institution: { id: string; shortName: string }
+  subject: { id: string; name: string; icon: string | null }
+  totalTeachers: number
+  totalClasses: number
+  teachers: SubjectTeacher[]
 }
 
 export function useSubjectTeachers(
@@ -84,7 +117,7 @@ export function useSubjectTeachers(
       'teachers',
     ],
     queryFn: () =>
-      apiFetch<SubjectTeacher[]>(
+      apiFetch<SubjectTeachersResponse>(
         `/institutions/${institutionId}/subjects/${subjectId}/teachers`,
       ),
     enabled: !!institutionId && !!subjectId,

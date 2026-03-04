@@ -85,18 +85,48 @@ export function useBuyerList(classEventId: string) {
 export function useUpdateTeacherProfile() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: {
+    mutationFn: async (data: {
       bio?: string
+      photoFile?: File
       institutionIds?: string[]
       subjectIds?: string[]
-    }) =>
-      apiFetch('/teacher-profile', {
+    }) => {
+      let photoUrl: string | undefined
+
+      if (data.photoFile) {
+        // 1. Get signed upload URL from backend
+        const upload = await apiFetch<{
+          uploadUrl: string
+          publicUrl: string
+        }>('/uploads/profile-photo', {
+          method: 'POST',
+          body: JSON.stringify({
+            filename: data.photoFile.name,
+            fileSize: data.photoFile.size,
+          }),
+        })
+
+        // 2. Upload file directly to Supabase Storage
+        const res = await fetch(upload.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': data.photoFile.type },
+          body: data.photoFile,
+        })
+        if (!res.ok) throw new Error('Falha ao enviar foto')
+
+        photoUrl = upload.publicUrl
+      }
+
+      // 3. Update profile with all fields
+      const { photoFile: _, ...rest } = data
+      return apiFetch('/teacher-profile', {
         method: 'PUT',
-        body: JSON.stringify(data),
-      }),
+        body: JSON.stringify({ ...rest, ...(photoUrl ? { photoUrl } : {}) }),
+      })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-      toast.success('Profile updated')
+      toast.success('Perfil atualizado')
     },
     onError: (err: Error) => toast.error(err.message),
   })

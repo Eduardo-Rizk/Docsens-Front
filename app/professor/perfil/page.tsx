@@ -24,6 +24,7 @@ export default function TeacherPerfilPage() {
   const [institutionIds, setInstitutionIds] = useState<string[]>([]);
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState<string | undefined>();
+  const [photoFile, setPhotoFile] = useState<File | undefined>();
   const [initialized, setInitialized] = useState(false);
 
   // Pre-populate form with existing teacher profile data
@@ -61,6 +62,7 @@ export default function TeacherPerfilPage() {
 
   function handlePhotoChange(file: File | undefined) {
     if (!file) return;
+    setPhotoFile(file);
     const nextUrl = URL.createObjectURL(file);
     setPhotoUrl((prev) => {
       if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
@@ -80,6 +82,7 @@ export default function TeacherPerfilPage() {
     e.preventDefault();
     updateProfile.mutate({
       bio,
+      photoFile,
       institutionIds,
       subjectIds,
     });

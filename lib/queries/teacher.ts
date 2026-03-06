@@ -102,7 +102,8 @@ export function useUpdateTeacherProfile() {
           method: 'POST',
           body: JSON.stringify({
             filename: data.photoFile.name,
-            fileSize: data.photoFile.size,
+            contentType: data.photoFile.type,
+            sizeBytes: data.photoFile.size,
           }),
         })
 

@@ -52,62 +52,70 @@ export default function TeacherDashboardPage() {
 
       {/* KPI cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-sm border border-border bg-surface p-5">
-          <div className="flex items-center gap-2 text-brand-accent">
-            <TrendingUp size={14} />
-            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+        <div className="rounded-xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-emerald-100/40 p-5">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15">
+              <TrendingUp size={16} className="text-emerald-600" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700/70">
               Receita total
             </p>
           </div>
           <p className="mt-3 font-display text-4xl text-foreground">
             {formatPrice(dashboard.totalRevenueSucceededCents)}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-emerald-700/50">
             pagamentos confirmados
           </p>
         </div>
 
-        <div className="rounded-sm border border-border bg-surface p-5">
+        <div className="rounded-xl border border-sky-200/60 bg-gradient-to-br from-sky-50 to-sky-100/40 p-5">
           <div className="flex items-center gap-2">
-            <Users size={14} className="text-brand-accent" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/15">
+              <Users size={16} className="text-sky-600" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700/70">
               Alunos pagantes
             </p>
           </div>
           <p className="mt-3 font-display text-4xl text-foreground">
             {dashboard.totalPaidStudents}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-sky-700/50">
             matrículas pagas no total
           </p>
         </div>
 
-        <div className="rounded-sm border border-border bg-surface p-5">
+        <div className="rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50 to-violet-100/40 p-5">
           <div className="flex items-center gap-2">
-            <BookOpen size={14} className="text-brand-accent" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15">
+              <BookOpen size={16} className="text-violet-600" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-700/70">
               Aulões criados
             </p>
           </div>
           <p className="mt-3 font-display text-4xl text-foreground">
             {dashboard.totalClasses}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-violet-700/50">
             ao longo do tempo
           </p>
         </div>
 
-        <div className="rounded-sm border border-border bg-surface p-5">
+        <div className="rounded-xl border border-amber-200/60 bg-gradient-to-br from-amber-50 to-amber-100/40 p-5">
           <div className="flex items-center gap-2">
-            <Radio size={14} className="text-brand-accent" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15">
+              <Radio size={16} className="text-amber-600" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700/70">
               Publicados
             </p>
           </div>
           <p className="mt-3 font-display text-4xl text-foreground">
             {dashboard.publishedClasses}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-amber-700/50">
             ativos agora
           </p>
         </div>
@@ -129,7 +137,7 @@ export default function TeacherDashboardPage() {
             return (
               <div
                 key={classEvent.id}
-                className="flex flex-col gap-4 rounded-sm border border-border bg-surface p-5 sm:flex-row sm:items-center sm:gap-6"
+                className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5 transition-colors hover:bg-surface/80 sm:flex-row sm:items-center sm:gap-6"
               >
                 {/* Date/time */}
                 <div className="w-28 shrink-0 space-y-0.5">
@@ -156,7 +164,7 @@ export default function TeacherDashboardPage() {
                 {/* Metrics */}
                 <div className="flex shrink-0 flex-wrap items-center gap-4">
                   <div className="text-right">
-                    <p className="font-display text-xl text-brand-accent">
+                    <p className="font-display text-xl text-emerald-600">
                       {formatPrice(revenueSucceededCents)}
                     </p>
                     <p className="text-[10px] text-muted-foreground/60">receita</p>

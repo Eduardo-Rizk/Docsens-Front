@@ -39,7 +39,7 @@ export default function ProfessorLayout({
       <div className="flex items-center gap-4 border-b border-border pb-6">
         <TeacherAvatar
           initials={initials}
-          photoUrl={undefined}
+          photoUrl={user.teacherProfile?.photoUrl ?? undefined}
           alt={user.name}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border border-cyan-500/30 bg-cyan-500/20 text-sm font-bold text-cyan-300"
         />

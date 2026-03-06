@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
   Clock,
@@ -73,6 +74,7 @@ function SectionDivider({ label, accent = false }: { label: string; accent?: boo
 
 export default function TeacherClassEventDetailPage({ params }: PageProps) {
   const { classEventId } = use(params);
+  const router = useRouter();
   const { data: detail, isLoading } = useTeacherClassEvent(classEventId);
   const updateClassEvent = useUpdateClassEvent();
 
@@ -192,7 +194,7 @@ export default function TeacherClassEventDetailPage({ params }: PageProps) {
 
     if (Object.keys(updates).length > 1) {
       updateClassEvent.mutate(updates as { id: string }, {
-        onSuccess: () => setDirty(false),
+        onSuccess: () => router.push("/professor/auloes"),
       });
     }
   }

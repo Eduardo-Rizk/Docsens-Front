@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/login(.*)',
   '/cadastro(.*)',
   '/reset-password(.*)',
+  '/sso-callback(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
@@ -27,11 +28,15 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // Redirect signed-in users away from auth pages
+  // Allow /cadastro?oauth=1 for signed-in users completing OAuth registration
   const authPaths = ['/login', '/cadastro']
   if (authPaths.some(p => pathname.startsWith(p))) {
     const { userId } = await auth()
     if (userId) {
-      return NextResponse.redirect(new URL('/', req.url))
+      const isOAuthCompletion = pathname.startsWith('/cadastro') && req.nextUrl.searchParams.get('oauth') === '1'
+      if (!isOAuthCompletion) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
     }
     return NextResponse.next()
   }

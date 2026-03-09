@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useCallback } from 'react'
+import { createContext, useContext, useCallback, useState } from 'react'
 import { useUser, useAuth as useClerkAuth, useSignUp } from '@clerk/nextjs'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from './api'
@@ -27,7 +27,7 @@ export interface AuthUser {
 export interface RegisterData {
   name: string
   email: string
-  password: string
+  password?: string
   phone: string
   role: 'STUDENT' | 'TEACHER'
   institutionIds: string[]
@@ -37,8 +37,10 @@ export interface RegisterData {
 interface AuthContextType {
   user: AuthUser | null
   isLoading: boolean
+  isLoggingOut: boolean
   startRegister: (data: RegisterData) => Promise<void>
   verifyEmailAndComplete: (code: string, data: RegisterData) => Promise<void>
+  completeOAuthRegister: (data: Omit<RegisterData, 'password'>) => Promise<void>
   logout: () => void
 }
 
@@ -49,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { signOut } = useClerkAuth()
   const { signUp } = useSignUp()
   const queryClient = useQueryClient()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   // Fetch full profile from backend when signed in
   const { data: user = null, isLoading: profileLoading } = useQuery({
@@ -68,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { error } = await signUp.password({
         emailAddress: data.email,
-        password: data.password,
+        password: data.password!,
         firstName: data.name.split(' ')[0],
         lastName: data.name.split(' ').slice(1).join(' ') || undefined,
       })
@@ -117,14 +120,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [signUp, queryClient],
   )
 
+  // For OAuth users: they're already signed in via Clerk, just create DB records
+  const completeOAuthRegister = useCallback(
+    async (data: Omit<RegisterData, 'password'>) => {
+      await apiFetch<{ message: string }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          role: data.role,
+          institutionIds: data.institutionIds,
+          subjectIds: data.subjectIds,
+        }),
+      })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+    },
+    [queryClient],
+  )
+
   const logout = useCallback(async () => {
-    await signOut()
+    setIsLoggingOut(true)
     queryClient.clear()
-    window.location.href = '/'
+    await signOut({ redirectUrl: '/' })
   }, [signOut, queryClient])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, startRegister, verifyEmailAndComplete, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isLoggingOut, startRegister, verifyEmailAndComplete, completeOAuthRegister, logout }}>
       {isLoading ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
           <div className="flex flex-col items-center gap-4">

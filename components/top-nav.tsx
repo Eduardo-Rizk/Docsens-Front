@@ -37,7 +37,7 @@ const SCROLL_THRESHOLD = 50;
 export function TopNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading, isLoggingOut, logout } = useAuth();
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -182,10 +182,11 @@ export function TopNav() {
                   <span className="text-sm text-white/60">{user.name}</span>
                   <button
                     onClick={logout}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white border border-white/15 hover:border-white/30 transition-all duration-200 rounded-lg hover:bg-white/[0.05]"
+                    disabled={isLoggingOut}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white border border-white/15 hover:border-white/30 transition-all duration-200 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:pointer-events-none"
                   >
-                    <LogOut size={12} />
-                    Sair
+                    <LogOut size={12} className={isLoggingOut ? "animate-spin" : ""} />
+                    {isLoggingOut ? "Saindo..." : "Sair"}
                   </button>
                 </div>
               )}
@@ -313,10 +314,11 @@ export function TopNav() {
                       setMobileOpen(false);
                       logout();
                     }}
-                    className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-white/60 border border-white/15 rounded-xl hover:text-white hover:border-white/30 transition-all"
+                    disabled={isLoggingOut}
+                    className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-white/60 border border-white/15 rounded-xl hover:text-white hover:border-white/30 transition-all disabled:opacity-50 disabled:pointer-events-none"
                   >
-                    <LogOut size={16} />
-                    Sair
+                    <LogOut size={16} className={isLoggingOut ? "animate-spin" : ""} />
+                    {isLoggingOut ? "Saindo..." : "Sair"}
                   </button>
                 )}
               </motion.div>

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSignIn } from "@clerk/nextjs";
 import { AuthLayout } from "@/components/AuthLayout";
-import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 const input =
   "w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground/40 px-4 py-3 text-sm font-medium focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent/20 transition-all duration-200";
@@ -16,19 +17,23 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!isLoaded) return;
     setLoading(true);
     try {
-      await login(email, password);
-      router.push(redirect);
-    } catch {
-      // Error toast handled by auth context
+      const result = await signIn!.create({ identifier: email, password });
+      if (result.status === "complete") {
+        await setActive!({ session: result.createdSessionId });
+        router.push(redirect);
+      }
+    } catch (err: any) {
+      toast.error(err.errors?.[0]?.longMessage || "Email ou senha incorretos.");
     } finally {
       setLoading(false);
     }

@@ -1,48 +1,50 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-const protectedPaths = ['/aluno', '/professor', '/checkout', '/nova-senha']
-const authPaths = ['/login', '/cadastro']
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/explorar(.*)',
+  '/instituicoes(.*)',
+  '/auloes(.*)',
+  '/login(.*)',
+  '/cadastro(.*)',
+  '/reset-password(.*)',
+])
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth-token')?.value
-  const { pathname } = request.nextUrl
+export default clerkMiddleware(async (auth, req) => {
+  const { pathname } = req.nextUrl
 
-  // For API proxy requests: inject Authorization header from cookie
-  if (pathname.startsWith('/api/') && token) {
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('Authorization', `Bearer ${token}`)
-    return NextResponse.next({
-      request: { headers: requestHeaders },
-    })
-  }
-
-  // Protected routes: redirect to /login if no token
-  if (protectedPaths.some((p) => pathname.startsWith(p))) {
-    if (!token) {
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
-
-  // Auth routes: redirect to home if already logged in
-  if (authPaths.some((p) => pathname.startsWith(p))) {
+  // For API proxy requests: inject Clerk token as Authorization header
+  if (pathname.startsWith('/api/')) {
+    const { getToken } = await auth()
+    const token = await getToken()
     if (token) {
-      return NextResponse.redirect(new URL('/', request.url))
+      const requestHeaders = new Headers(req.headers)
+      requestHeaders.set('Authorization', `Bearer ${token}`)
+      return NextResponse.next({ request: { headers: requestHeaders } })
     }
+    return NextResponse.next()
   }
 
-  return NextResponse.next()
-}
+  // Redirect signed-in users away from auth pages
+  const authPaths = ['/login', '/cadastro']
+  if (authPaths.some(p => pathname.startsWith(p))) {
+    const { userId } = await auth()
+    if (userId) {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Protect non-public routes
+  if (!isPublicRoute(req)) {
+    await auth.protect()
+  }
+})
 
 export const config = {
   matcher: [
-    '/aluno/:path*',
-    '/professor/:path*',
-    '/checkout/:path*',
-    '/nova-senha',
-    '/login',
-    '/cadastro',
-    '/api/:path*',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
   ],
 }

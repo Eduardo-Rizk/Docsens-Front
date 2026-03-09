@@ -17,23 +17,27 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { signIn } = useSignIn();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signIn) return;
     setLoading(true);
     try {
-      const result = await signIn!.create({ identifier: email, password });
-      if (result.status === "complete") {
-        await setActive!({ session: result.createdSessionId });
+      const { error } = await signIn.password({ identifier: email, password });
+      if (error) {
+        toast.error(error.longMessage || "Email ou senha incorretos.");
+        return;
+      }
+      if (signIn.status === "complete") {
+        await signIn.finalize();
         router.push(redirect);
       }
-    } catch (err: any) {
-      toast.error(err.errors?.[0]?.longMessage || "Email ou senha incorretos.");
+    } catch {
+      toast.error("Email ou senha incorretos.");
     } finally {
       setLoading(false);
     }

@@ -46,7 +46,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded: clerkLoaded } = useUser()
   const { signOut } = useClerkAuth()
-  const { signIn, setActive } = useSignIn()
+  const { signIn } = useSignIn()
   const queryClient = useQueryClient()
 
   // Fetch full profile from backend when signed in
@@ -71,12 +71,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 2. Auto sign-in via Clerk after backend registration
       if (!signIn) return
       try {
-        const result = await signIn.create({
+        const { error } = await signIn.password({
           identifier: data.email,
           password: data.password,
         })
-        if (result.status === 'complete' && setActive) {
-          await setActive({ session: result.createdSessionId })
+        if (error) {
+          toast.success('Conta criada! Faça login para continuar.')
+          return
+        }
+        if (signIn.status === 'complete') {
+          await signIn.finalize()
           queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
         }
       } catch {
@@ -84,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toast.success('Conta criada! Faça login para continuar.')
       }
     },
-    [signIn, setActive, queryClient],
+    [signIn, queryClient],
   )
 
   const logout = useCallback(async () => {

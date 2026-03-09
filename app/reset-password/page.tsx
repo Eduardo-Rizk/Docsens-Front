@@ -15,41 +15,71 @@ const label =
   "block text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60 mb-2";
 
 export default function ResetPasswordPage() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { signIn } = useSignIn();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [step, setStep] = useState<"email" | "code">("email");
+  const [step, setStep] = useState<"email" | "code" | "newPassword">("email");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Step 1: Request reset code
+  // Step 1: Create sign-in with reset strategy and send code
   async function handleRequestCode(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signIn) return;
     setLoading(true);
     setError("");
     try {
-      await signIn!.create({
-        strategy: "reset_password_email_code",
-        identifier: email,
-      });
+      // Create sign-in attempt with reset strategy
+      const createResult = await signIn.create({ identifier: email });
+      if (createResult.error) {
+        setError(createResult.error.longMessage || "Erro ao enviar código.");
+        return;
+      }
+      // Send the reset code
+      const { error: sendError } = await signIn.resetPasswordEmailCode.sendCode();
+      if (sendError) {
+        setError(sendError.longMessage || "Erro ao enviar código.");
+        return;
+      }
       setStep("code");
       toast.success("Código enviado! Verifique seu email.");
-    } catch (err: any) {
-      setError(err.errors?.[0]?.longMessage || "Erro ao enviar código.");
+    } catch {
+      setError("Erro ao enviar código.");
     } finally {
       setLoading(false);
     }
   }
 
-  // Step 2: Submit code + new password
-  async function handleReset(e: React.FormEvent) {
+  // Step 2: Verify the code
+  async function handleVerifyCode(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signIn) return;
+    setLoading(true);
+    setError("");
+    try {
+      const { error: verifyError } = await signIn.resetPasswordEmailCode.verifyCode({ code });
+      if (verifyError) {
+        setError(verifyError.longMessage || "Código inválido ou expirado.");
+        return;
+      }
+      if (signIn.status === "needs_new_password") {
+        setStep("newPassword");
+      }
+    } catch {
+      setError("Código inválido ou expirado.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Step 3: Submit new password
+  async function handleSubmitPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!signIn) return;
     if (password !== confirmPassword) {
       toast.error("As senhas não coincidem.");
       return;
@@ -58,55 +88,34 @@ export default function ResetPasswordPage() {
       toast.error("A senha deve ter no mínimo 8 caracteres.");
       return;
     }
-
     setLoading(true);
     setError("");
     try {
-      const result = await signIn!.attemptFirstFactor({
-        strategy: "reset_password_email_code",
-        code,
-        password,
-      });
-      if (result.status === "complete") {
-        await setActive!({ session: result.createdSessionId });
+      const { error: submitError } = await signIn.resetPasswordEmailCode.submitPassword({ password });
+      if (submitError) {
+        setError(submitError.longMessage || "Erro ao redefinir senha.");
+        return;
+      }
+      if (signIn.status === "complete") {
+        await signIn.finalize();
         toast.success("Senha redefinida com sucesso!");
         router.push("/");
       }
-    } catch (err: any) {
-      setError(err.errors?.[0]?.longMessage || "Código inválido ou expirado.");
+    } catch {
+      setError("Erro ao redefinir senha.");
     } finally {
       setLoading(false);
     }
   }
 
-  if (step === "code") {
+  // Step 3: New password form
+  if (step === "newPassword") {
     return (
       <AuthLayout
-        title="Redefinir senha"
-        subtitle="Digite o código enviado para seu email e escolha uma nova senha."
+        title="Nova senha"
+        subtitle="Escolha uma nova senha para sua conta."
       >
-        <form className="space-y-5" onSubmit={handleReset}>
-          <div>
-            <label htmlFor="code" className={label}>
-              Código de verificação
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground/40">
-                <KeyRound size={16} />
-              </div>
-              <input
-                id="code"
-                type="text"
-                placeholder="123456"
-                className={`${input} pl-10`}
-                autoComplete="one-time-code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
+        <form className="space-y-5" onSubmit={handleSubmitPassword}>
           <div>
             <label htmlFor="password" className={label}>
               Nova senha
@@ -167,6 +176,51 @@ export default function ResetPasswordPage() {
             {loading ? "Redefinindo..." : "Redefinir senha"}
           </button>
         </form>
+      </AuthLayout>
+    );
+  }
+
+  // Step 2: Code verification form
+  if (step === "code") {
+    return (
+      <AuthLayout
+        title="Verificar código"
+        subtitle="Digite o código enviado para seu email."
+      >
+        <form className="space-y-5" onSubmit={handleVerifyCode}>
+          <div>
+            <label htmlFor="code" className={label}>
+              Código de verificação
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground/40">
+                <KeyRound size={16} />
+              </div>
+              <input
+                id="code"
+                type="text"
+                placeholder="123456"
+                className={`${input} pl-10`}
+                autoComplete="one-time-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-[11px] text-red-400 text-center">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#ea580c] text-white font-bold text-xs uppercase tracking-[0.14em] py-3.5 rounded-md hover:bg-[#c2410c] active:scale-[0.99] transition-all duration-150 disabled:opacity-50"
+          >
+            {loading ? "Verificando..." : "Verificar código"}
+          </button>
+        </form>
 
         <p className="text-center text-[11px] text-muted-foreground/50 tracking-wide">
           <button
@@ -185,6 +239,7 @@ export default function ResetPasswordPage() {
     );
   }
 
+  // Step 1: Email form
   return (
     <AuthLayout
       title="Redefinir senha"

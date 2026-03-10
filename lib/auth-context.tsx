@@ -1,8 +1,9 @@
 'use client'
-import { createContext, useContext, useCallback, useState } from 'react'
+import { createContext, useContext, useCallback, useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useUser, useAuth as useClerkAuth, useSignUp } from '@clerk/nextjs'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiFetch } from './api'
+import { apiFetch, setTokenGetter } from './api'
 import { toast } from 'sonner'
 
 export interface AuthUser {
@@ -38,6 +39,7 @@ interface AuthContextType {
   user: AuthUser | null
   isLoading: boolean
   isLoggingOut: boolean
+  needsRegistration: boolean
   startRegister: (data: RegisterData) => Promise<void>
   verifyEmailAndComplete: (code: string, data: RegisterData) => Promise<void>
   completeOAuthRegister: (data: Omit<RegisterData, 'password'>) => Promise<void>
@@ -48,13 +50,18 @@ const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded: clerkLoaded } = useUser()
-  const { signOut } = useClerkAuth()
+  const { signOut, getToken } = useClerkAuth()
   const { signUp } = useSignUp()
   const queryClient = useQueryClient()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
+  // Wire up Clerk token for direct backend calls (bypasses Next.js middleware)
+  useEffect(() => {
+    setTokenGetter(() => getToken())
+  }, [getToken])
+
   // Fetch full profile from backend when signed in
-  const { data: user = null, isLoading: profileLoading } = useQuery({
+  const { data: user = null, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: () => apiFetch<AuthUser>('/auth/me'),
     enabled: !!isSignedIn,
@@ -62,7 +69,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     staleTime: 5 * 60 * 1000,
   })
 
+  // User has a Clerk session but no backend profile → needs to complete registration
+  const needsRegistration = !!isSignedIn && !profileLoading && !user && !!profileError
+
   const isLoading = !clerkLoaded || (isSignedIn && profileLoading)
+
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Block navigation: force user to complete registration
+  useEffect(() => {
+    if (needsRegistration && pathname !== '/cadastro') {
+      router.replace('/cadastro?oauth=1')
+    }
+  }, [needsRegistration, pathname, router])
 
   // Step 1: Create Clerk user and send email verification code
   const startRegister = useCallback(
@@ -142,12 +162,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoggingOut(true)
     queryClient.clear()
-    await signOut({ redirectUrl: '/' })
+    try {
+      await signOut()
+      window.location.href = '/'
+    } catch {
+      toast.error('Erro ao sair. Tente novamente.')
+      setIsLoggingOut(false)
+    }
   }, [signOut, queryClient])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isLoggingOut, startRegister, verifyEmailAndComplete, completeOAuthRegister, logout }}>
-      {isLoading ? (
+    <AuthContext.Provider value={{ user, isLoading, isLoggingOut, needsRegistration, startRegister, verifyEmailAndComplete, completeOAuthRegister, logout }}>
+      {isLoading || isLoggingOut ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2.5">

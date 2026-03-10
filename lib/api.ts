@@ -1,4 +1,4 @@
-const BASE = '/api';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export class ApiError extends Error {
   constructor(
@@ -9,14 +9,23 @@ export class ApiError extends Error {
   }
 }
 
+// Token getter set by AuthProvider (Clerk's getToken)
+let _getToken: (() => Promise<string | null>) | null = null;
+
+export function setTokenGetter(fn: () => Promise<string | null>) {
+  _getToken = fn;
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const token = _getToken ? await _getToken() : null;
+
+  const res = await fetch(`${BACKEND_URL}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
       ...init?.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    credentials: 'include',
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

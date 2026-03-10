@@ -37,7 +37,7 @@ const SCROLL_THRESHOLD = 50;
 export function TopNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, isLoading, isLoggingOut, logout } = useAuth();
+  const { user, isLoading, isLoggingOut, needsRegistration, logout } = useAuth();
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -167,12 +167,22 @@ export function TopNav() {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
-              {!isLoading && !user && (
+              {!isLoading && !user && !needsRegistration && (
                 <Link
                   href="/login"
                   className="hidden md:flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-[#ea580c] to-[#dc2626] hover:from-[#c2410c] hover:to-[#b91c1c] transition-all duration-300 shadow-lg shadow-[#ea580c]/20 hover:shadow-[#ea580c]/30"
                 >
                   Entrar
+                  <ArrowUpRight size={14} />
+                </Link>
+              )}
+
+              {!isLoading && needsRegistration && (
+                <Link
+                  href="/cadastro?oauth=1"
+                  className="hidden md:flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-[#ea580c] to-[#dc2626] hover:from-[#c2410c] hover:to-[#b91c1c] transition-all duration-300 shadow-lg shadow-[#ea580c]/20 hover:shadow-[#ea580c]/30"
+                >
+                  Completar cadastro
                   <ArrowUpRight size={14} />
                 </Link>
               )}
@@ -299,7 +309,16 @@ export function TopNav() {
                 }}
                 className="mt-6"
               >
-                {!user ? (
+                {needsRegistration ? (
+                  <Link
+                    href="/cadastro?oauth=1"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-white rounded-xl bg-gradient-to-r from-[#ea580c] to-[#dc2626] shadow-lg shadow-[#ea580c]/20"
+                  >
+                    Completar cadastro
+                    <ArrowUpRight size={16} />
+                  </Link>
+                ) : !user ? (
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}

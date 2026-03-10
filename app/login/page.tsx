@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useSignIn, useClerk } from "@clerk/nextjs";
+import { useSignIn, useClerk, useUser } from "@clerk/nextjs";
 import { AuthLayout } from "@/components/AuthLayout";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 
 function GoogleIcon({ className }: { className?: string }) {
@@ -29,11 +30,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { signIn } = useSignIn();
+  const { signIn, setActive } = useSignIn();
   const clerk = useClerk();
+  const { isSignedIn } = useUser();
+  const { user, needsRegistration } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
+
+  // If already fully logged in (Clerk + backend profile), redirect away
+  // If signed in via Clerk but no backend profile, redirect to complete registration
+  useEffect(() => {
+    if (user) {
+      router.replace(redirect);
+    } else if (needsRegistration) {
+      router.replace("/cadastro?oauth=1");
+    }
+  }, [user, needsRegistration, router, redirect]);
 
   const handleGoogleLogin = useCallback(async () => {
     if (!clerk.client) return;
@@ -52,23 +65,42 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!signIn) return;
+    if (!signIn || !setActive) return;
     setLoading(true);
     try {
-      const { error } = await signIn.password({ identifier: email, password });
-      if (error) {
-        toast.error(error.longMessage || "Email ou senha incorretos.");
+      const result = await signIn.create({ identifier: email, password });
+
+      if (result.status === "complete") {
+        await setActive({ session: result.createdSessionId });
+        router.push(redirect);
+      } else {
+        console.error("Sign-in not complete:", result.status);
+        toast.error("Não foi possível completar o login.");
+      }
+    } catch (err: unknown) {
+      const clerkError = err as { errors?: { code?: string; longMessage?: string; message?: string }[] };
+      const code = clerkError.errors?.[0]?.code;
+
+      // Already signed in — redirect to home or registration
+      if (code === "session_exists") {
+        if (needsRegistration) {
+          router.push("/cadastro?oauth=1");
+        } else {
+          router.push(redirect);
+        }
         return;
       }
-      if (signIn.status === "complete") {
-        await signIn.finalize();
-        router.push(redirect);
-      }
-    } catch {
-      toast.error("Email ou senha incorretos.");
+
+      const message = clerkError.errors?.[0]?.longMessage || clerkError.errors?.[0]?.message;
+      toast.error(message || "Email ou senha incorretos.");
     } finally {
       setLoading(false);
     }
+  }
+
+  // Don't show login form if already signed in (redirecting)
+  if (isSignedIn) {
+    return null;
   }
 
   return (

@@ -142,7 +142,7 @@ export default function StudentProfilePage() {
             Pre-visualizacao
           </p>
           <div className="rounded-sm border border-border bg-surface p-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground">
               {user.name}
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">

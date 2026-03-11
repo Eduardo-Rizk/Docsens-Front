@@ -120,9 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (signUp.status === 'complete') {
         await signUp.finalize({
-          navigate: ({ decorateUrl }) => {
-            const url = decorateUrl('/')
-            window.location.href = url.startsWith('http') ? url : `${window.location.origin}${url}`
+          navigate: () => {
+            // No-op: let the caller handle navigation after backend registration completes
           },
         })
 
